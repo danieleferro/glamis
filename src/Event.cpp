@@ -161,7 +161,7 @@ void EventManager::RestoreSunday(void)
 {
     unsigned int i;
     tmElements_t time_elem;
-    time_t time_now, time_sunday;
+    time_t time_now, time_sunday, time_event;
     int elapse_days;
 
     // getting time now
@@ -178,8 +178,13 @@ void EventManager::RestoreSunday(void)
 	time_elem.Second = 0;
 	time_elem.Minute = sundayEvent[i].Minute;
 	time_elem.Hour = sundayEvent[i].Hour;
+	
+	time_event = makeTime(time_elem);
 
-	list.AddEvent(new Event(makeTime(time_elem), sundayEvent[i].action));
+	if (time_event < time_now)
+	    continue;
+
+	list.AddEvent(new Event(time_event, sundayEvent[i].action));
 
     }
     
