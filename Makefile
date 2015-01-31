@@ -1,4 +1,4 @@
 LIBRARIES := SPI EEPROM Mirf Time
 BOARD := nano
-TARGET := project
+TARGET := glamis
 include ./arduino.mk

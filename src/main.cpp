@@ -17,7 +17,7 @@ void loop(void)
     delay(1000);
     digitalWrite(13,LOW);
     delay(1000);
-    Serial.println("Hello World\n");
+    printf("Hello World");
 
     loop_Mirf();
 }

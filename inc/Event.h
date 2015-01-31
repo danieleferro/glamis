@@ -63,7 +63,6 @@ private:
     EventList list;
 
     void RestoreDay(timeDayOfWeek_t day);
-    void RestoreSunday(void);
 
 };
 
