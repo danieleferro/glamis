@@ -19,13 +19,15 @@ public:
     SerialParser(void);
     SerialParser(byte cmdBeginIndicator, byte cmdEndIndicator);
 
-    void (*ReceiverPtr)(byte* buf, byte cmdLength);
-    void (*SenderPtr)(byte buf);
+    // called after a message has been received
+    virtual void ReceiverCallback(byte* buf, byte cmdLength) = 0;
+    // called to send data
+    virtual void SenderCallback(byte buf) = 0;
 
-    void Receive(byte data);
-    void Receive(byte * data, byte dataLength);
-    void Send(byte cmd);
-    void Send(byte* cmd, byte cmdLength);
+    void Read(byte data);
+    void Read(byte * data, byte dataLength);
+    void Write(byte cmd);
+    void Write(byte* cmd, byte cmdLength);
 
 private:
 	

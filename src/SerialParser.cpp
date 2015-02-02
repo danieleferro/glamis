@@ -20,7 +20,7 @@ SerialParser::SerialParser(byte cmdBeginIndicator, byte cmdEndIndicator)
     cmdEndInd = cmdEndIndicator;
 }
 
-void SerialParser::Receive(byte data)
+void SerialParser::Read(byte data)
 {
     byte sum;
     unsigned char i;
@@ -34,19 +34,15 @@ void SerialParser::Receive(byte data)
     else if (data == cmdEndInd)
     {
 	cmdBegan = false;
-	if (ReceiverPtr)
-	{
-	    // check sum
-	    if (cmdBufferIdx > 1) {
-		sum = 0;
-		for (i = 0; i < cmdBufferIdx - 1; i++) sum += buf[i];
-		
-		if ((sum & 0xFF) == buf[cmdBufferIdx - 1]) {
-		    // data ok
-		    ReceiverPtr(buf, cmdBufferIdx - 1);
-		}
+	// check sum
+	if (cmdBufferIdx > 1) {
+	    sum = 0;
+	    for (i = 0; i < cmdBufferIdx - 1; i++) sum += buf[i];
+	    
+	    if ((sum & 0xFF) == buf[cmdBufferIdx - 1]) {
+		// data ok
+		ReceiverCallback(buf, cmdBufferIdx - 1);
 	    }
-
 	}
     } 
     else
@@ -67,43 +63,37 @@ void SerialParser::Receive(byte data)
 }
 
 
-void SerialParser::Receive(byte * data, byte dataLength)
+void SerialParser::Read(byte * data, byte dataLength)
 {
     byte i;
     for (i = 0; i < dataLength; i++)
     {
-	Receive(data[i]);
+	Read(data[i]);
     }
 
 }
 
-void SerialParser::Send(byte cmd)
+void SerialParser::Write(byte cmd)
 {
-    if (!SenderPtr)
-	return;
-
-    SenderPtr(cmdBeginInd);
-    SenderPtr(cmd);
+    SenderCallback(cmdBeginInd);
+    SenderCallback(cmd);
     // send sum
-    SenderPtr(cmd);
-    SenderPtr(cmdEndInd);
+    SenderCallback(cmd);
+    SenderCallback(cmdEndInd);
 }
 
-void SerialParser::Send(byte* cmd, byte cmdLength)
+void SerialParser::Write(byte* cmd, byte cmdLength)
 {
     byte sum = 0;
 
-    if (!SenderPtr)
-	return;
-
-    SenderPtr(cmdBeginInd);
+    SenderCallback(cmdBeginInd);
     for (byte i = 0; i < cmdLength; i++)
     {
 	sum += cmd[i];
-	SenderPtr(cmd[i]);
+	SenderCallback(cmd[i]);
     }
     // send sum
-    SenderPtr(sum);
-    SenderPtr(cmdEndInd);
+    SenderCallback(sum);
+    SenderCallback(cmdEndInd);
 }
 
