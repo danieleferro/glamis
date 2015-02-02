@@ -3,36 +3,24 @@
 
 #include <Time.h>  
 
-class EventList;
-
 typedef enum {
     ON,
     OFF,
     ACTIONS_NUM
 }  action_t;
 
+typedef struct event_t event_t;
 
-class Event
+struct event_t
 {
-public:
-    
-    Event(time_t time, action_t action);
-    action_t GetAction(void);
-    bool IsElapsed(void);
-
-private:
     time_t time;
     unsigned int id;
     action_t action;
-    bool valid;
-
-    static unsigned int id_counter;
-    Event * next;
-    
-    friend class EventList;
+    event_t * next;    
 };
 
-typedef struct  { 
+typedef struct
+{
     timeDayOfWeek_t Day;
     uint8_t Minute; 
     uint8_t Hour; 
@@ -45,13 +33,15 @@ class EventList {
 public:
     EventList(void);
 
-    unsigned int Count(void);
-    void AddEvent(Event * event);
+    unsigned int Size(void);
+    void AddEvent(event_t * event);
     bool RemEvent(unsigned int id);
-    Event * GetFirstEvent(void);
+    event_t * GetFirstEvent(void);
+    event_t * CreateEvent(time_t time, action_t action);
 
 private:
-    Event * first;
+    event_t * first;
+    static unsigned int event_counter;
 };
 
 

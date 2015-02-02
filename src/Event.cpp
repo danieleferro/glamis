@@ -23,43 +23,31 @@ const fixedEvent_t programEvent[] =
     {dowSunday, 17, 30, OFF},
 };
 
-// -------- Event
-unsigned int Event::id_counter = 0;
-
-Event::Event(time_t time, action_t action)
-{
-    this->time = time;
-    this->action = action;
-    this->id = ++id_counter;
-    this->valid = true;
-}
-
-action_t Event::GetAction(void)
-{
-    return action;
-}
- 
-bool Event::IsElapsed(void)
-{
-    return (now() > time);
-}
-
 // -------- EventList
+unsigned int EventList::event_counter = 0;
+
+event_t * EventList::CreateEvent(time_t time, action_t action)
+{
+    
+    event_t * event_ptr = (event_t *) malloc(sizeof(event_t)); 
+    memset(event_ptr, 0, sizeof(event_t));
+
+    event_ptr->id = (++event_counter) % 1000;
+    return event_ptr;
+
+}
 
 EventList::EventList(void)
 {
     this->first = NULL;
 }
 
-unsigned int EventList::Count(void)
+unsigned int EventList::Size(void)
 {
     unsigned int count = 0;
-    Event * ptr = first;
+    event_t * ptr = first;
     
-    if (!ptr)
-	return 0;
-
-    do
+    while (ptr)
     {
 	dbg("Event %02d, %02d.%02d%04d-%02d:%02d:%02d\n",
 	    ptr->id, day(ptr->time), month(ptr->time), day(ptr->time),
@@ -67,14 +55,14 @@ unsigned int EventList::Count(void)
 
 	count++;
 	ptr = ptr->next;
-    }  while (ptr);
+    }
   
     return count;
 }
 
-void EventList::AddEvent(Event * event)
+void EventList::AddEvent(event_t * event)
 {
-    Event * current;
+    event_t * current;
 
     // Special case for the head end
     if (first == NULL || first->time >= event->time)
@@ -104,8 +92,8 @@ void EventList::AddEvent(Event * event)
 bool EventList::RemEvent(unsigned int id)
 {
     bool res;
-    Event * ptr_pre = NULL;
-    Event * ptr_del = NULL;
+    event_t * ptr_pre = NULL;
+    event_t * ptr_del = NULL;
     
 
     // Check whether it is the head node
@@ -152,9 +140,9 @@ end:
     return res;
 }
 
-Event * EventList::GetFirstEvent(void)
+event_t * EventList::GetFirstEvent(void)
 {
-    Event * current;
+    event_t * current;
 
     if (!first)
 	return NULL;
@@ -212,6 +200,6 @@ void EventManager::RestoreDay(timeDayOfWeek_t day)
 	    continue;
 	}
 
-	list.AddEvent(new Event(time_event, programEvent[i].action));
+	list.AddEvent(list.CreateEvent(time_event, programEvent[i].action));
     }
 }
