@@ -33,6 +33,7 @@ private:
 };
 
 typedef struct  { 
+    timeDayOfWeek_t Day;
     uint8_t Minute; 
     uint8_t Hour; 
     action_t action;

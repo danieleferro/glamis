@@ -9,48 +9,19 @@
 #define dbg(fmt, args...)
 #endif
 
-const fixedEvent_t sundayEvent[] =
+const fixedEvent_t programEvent[] =
 {
-    {10, 30, ON},
-    {12, 30, OFF},
+    {dowSunday, 10, 30, ON},
+    {dowSunday, 12, 30, OFF},
+    {dowMonday, 9, 10, ON},
+    {dowMonday, 18, 30, OFF},
+    {dowThursday, 11, 43, ON},
+    {dowThursday, 16, 30, OFF},
+    {dowFriday, 6, 30, ON},
+    {dowFriday, 10, 30, OFF},
+    {dowSunday, 13, 30, ON},
+    {dowSunday, 17, 30, OFF},
 };
-
-const fixedEvent_t mondayEvent[] =
-{ 
-    {9, 05, ON},
-    {12, 30, OFF},
-};
-
-const fixedEvent_t tuesdayEvent[] =
-{ 
-    {10, 30, ON},
-    {12, 30, OFF},
-};
-
-const fixedEvent_t wednesdayEvent[] =
-{ 
-    {10, 30, ON},
-    {12, 30, OFF},
-};
-
-const fixedEvent_t thursdayEvent[] =
-{ 
-    {10, 30, ON},
-    {12, 30, OFF},
-};
-
-const fixedEvent_t fridayEvent[] =
-{ 
-    {10, 30, ON},
-    {12, 30, OFF},
-};
-
-const fixedEvent_t saturdayEvent[] = { 
-    {10, 30, ON},
-    {12, 30, OFF},
-};
-
-
 
 // -------- Event
 unsigned int Event::id_counter = 0;
@@ -202,83 +173,45 @@ Event * EventList::GetFirstEvent(void)
 EventManager::EventManager(void)
 {
     unsigned int i;
-    for (i = 0; i < 7; i++) {
-	RestoreDay((timeDayOfWeek_t)(i+1));
+    for (i = 1; i < 8; i++) {
+	RestoreDay((timeDayOfWeek_t)(i));
     }
 }
 
 void EventManager::RestoreDay(timeDayOfWeek_t day)
 {
     unsigned int i;
-    unsigned int event_num;
-    tmElements_t time_elem;
-    time_t time_now, time_sunday, time_event;
-    int elapse_days;
-    const fixedEvent_t * fixed_event_ptr;
+    time_t time_now, time_day, time_event;
 
     dbg("EventManager restoring day %s", dayStr(day));
  
     // getting time now
     time_now = now();
-    // time_t for sunday
-    elapse_days = abs(weekday(time_now) - day);
+    // remove hours and minutes
+    time_day = time_now 
+	- hour(time_now)*SECS_PER_HOUR
+	- minute(time_now)*SECS_PER_MIN;
 
-    time_sunday = time_now + SECS_PER_DAY * elapse_days;
-    breakTime(time_sunday, time_elem);
+    // add days
+    time_day += abs(weekday(time_now) - day)*SECS_PER_DAY;
 
-    switch (day)
+    for (i = 0; i < sizeof(programEvent)/sizeof(fixedEvent_t); i++) 
     {
-    case dowSunday:
-	event_num = sizeof(sundayEvent)/sizeof(fixedEvent_t);
-	fixed_event_ptr = sundayEvent;
-	break;
 
-    case dowMonday:
-	event_num = sizeof(mondayEvent)/sizeof(fixedEvent_t);
-	fixed_event_ptr = mondayEvent;
-	break;
-
-    case dowTuesday:
-	event_num = sizeof(tuesdayEvent)/sizeof(fixedEvent_t);
-	fixed_event_ptr = tuesdayEvent;
-	break;
-
-    case dowWednesday:
-	event_num = sizeof(wednesdayEvent)/sizeof(fixedEvent_t);
-	fixed_event_ptr = wednesdayEvent;
-	break;
-
-    case dowThursday:
-	event_num = sizeof(thursdayEvent)/sizeof(fixedEvent_t);
-	fixed_event_ptr = thursdayEvent;
-	break;
-
-    case dowFriday:
-	event_num = sizeof(fridayEvent)/sizeof(fixedEvent_t);
-	fixed_event_ptr = fridayEvent;
-	break;
-
-    case dowSaturday:
-	event_num = sizeof(saturdayEvent)/sizeof(fixedEvent_t);
-	fixed_event_ptr = saturdayEvent;
-	break;
-
-    default:
-	return;	
-    }
-
-    for (i = 0; i < event_num; i++) 
-    {
-	// overwrite only second, minute, hour
-	time_elem.Second = 0;
-	time_elem.Minute = fixed_event_ptr[i].Minute;
-	time_elem.Hour = fixed_event_ptr[i].Hour;
-	
-	time_event = makeTime(time_elem);
-
-	if (time_event < time_now)
+	if (programEvent[i].Day != day) {
+	    // wrong day
 	    continue;
+	}
 
-	list.AddEvent(new Event(time_event, fixed_event_ptr[i].action));
+	time_event = time_day
+	    + programEvent[i].Hour*SECS_PER_HOUR
+	    + programEvent[i].Minute*SECS_PER_MIN;
+
+	if (time_event < time_now) {
+	    // elapsed event
+	    continue;
+	}
+
+	list.AddEvent(new Event(time_event, programEvent[i].action));
     }
 }
