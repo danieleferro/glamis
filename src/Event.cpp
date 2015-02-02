@@ -22,8 +22,8 @@ const fixedEvent_t programEvent[] =
     {dowThursday, 16, 30, OFF},
     {dowFriday, 6, 30, ON},
     {dowFriday, 10, 30, OFF},
-    {dowSunday, 13, 30, ON},
-    {dowSunday, 17, 30, OFF},
+    {dowSaturday, 13, 30, ON},
+    {dowSaturday, 17, 30, OFF},
 };
 
 // -------- EventList
