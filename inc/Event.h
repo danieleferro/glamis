@@ -3,7 +3,8 @@
 
 #include <Time.h>  
 
-typedef enum {
+typedef enum
+{
     ON,
     OFF,
     ACTIONS_NUM
@@ -28,7 +29,8 @@ typedef struct
 } fixedEvent_t;
 
 
-class EventList {
+class EventList
+{
 
 public:
     EventList(void);
@@ -50,7 +52,8 @@ private:
 };
 
 
-class EventManager {
+class EventManager
+{
 
 public:
     EventManager(void);
