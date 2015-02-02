@@ -1,0 +1,16 @@
+#ifndef __COMMAND_INTERFACE_HEADER
+#define __COMMAND_INTERFACE_HEADER
+
+
+typedef enum
+{
+    GET_EVENT_LIST,
+    DEL_EVENT,
+    ADD_EVENT,
+    POWER_ON,
+    POWER_OFF,
+    COMMAND_NUM
+}  command_t;
+
+
+#endif // __COMMAND_INTERFACE_HEADER
