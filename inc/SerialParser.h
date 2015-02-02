@@ -23,6 +23,7 @@ public:
     void (*SenderPtr)(byte buf);
 
     void Receive(byte data);
+    void Receive(byte * data, byte dataLength);
     void Send(byte cmd);
     void Send(byte* cmd, byte cmdLength);
 

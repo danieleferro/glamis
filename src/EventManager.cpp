@@ -1,4 +1,4 @@
-#include "Event.h"
+#include "EventManager.h"
 #include <Arduino.h>
 
 #define MAX_EVENT_RETURN               128
@@ -7,7 +7,7 @@
 #define DEBUG                1
 
 #ifdef DEBUG
-#define dbg(fmt, args...)         printf(fmt, ## args)
+#define dbg(fmt, args...)         printf("EventManager: "fmt, ## args)
 #else
 #define dbg(fmt, args...)
 #endif

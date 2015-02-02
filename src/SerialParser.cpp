@@ -66,6 +66,17 @@ void SerialParser::Receive(byte data)
     }
 }
 
+
+void SerialParser::Receive(byte * data, byte dataLength)
+{
+    byte i;
+    for (i = 0; i < dataLength; i++)
+    {
+	Receive(data[i]);
+    }
+
+}
+
 void SerialParser::Send(byte cmd)
 {
     if (!SenderPtr)
