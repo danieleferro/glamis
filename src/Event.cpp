@@ -26,34 +26,29 @@ const fixedEvent_t programEvent[] =
     {dowSaturday, 17, 30, OFF},
 };
 
-// -------- EventList
-unsigned char EventList::event_counter = 0;
+// -------- EventManager
+unsigned char EventManager::event_counter = 0;
 
-EventList::EventList(void)
+EventManager::EventManager(void)
 {
+    unsigned char i;
+
     this->first = NULL;
-    return_array = (event_t**) malloc(sizeof(event_t*)*MAX_EVENT_RETURN);
+    this->return_array = (event_t**) malloc(sizeof(event_t*)*MAX_EVENT_RETURN);
+
+    for (i = 1; i < 8; i++)
+    {
+	RestoreDay((timeDayOfWeek_t)(i));
+    }
 }
 
-EventList::~EventList(void)
+EventManager::~EventManager(void)
 {
-    DelAllEvent();
     free (return_array);
+    DelAllEvent();
 }
 
-event_t * EventList::CreateEvent(time_t time, action_t action)
-{
-    
-    event_t * event_ptr = (event_t *) malloc(sizeof(event_t)); 
-    memset(event_ptr, 0, sizeof(event_t));
-
-    event_ptr->id = (++event_counter) % 1000;
-    return event_ptr;
-
-}
-
-
-unsigned char EventList::Size(void)
+unsigned char EventManager::EventNumber(void)
 {
     unsigned char count = 0;
     event_t * ptr = first;
@@ -71,13 +66,29 @@ unsigned char EventList::Size(void)
     return count;
 }
 
-bool EventList::AddEvent(event_t * event)
+bool EventManager::AddEvent(time_t time, action_t action)
 {
     event_t * current;
+    event_t * event;
 
     // check max size
-    if (Size() >= MAX_EVENT_LIST)
+    if (EventNumber() >= MAX_EVENT_LIST)
+    {
+	dbg("EventManager max event reached\n");
 	return false;
+    }
+
+    event = (event_t *) malloc(sizeof(event_t)); 
+    
+    if (!event)
+    {
+	dbg("EventManager event not created\n");
+	return false;
+    }
+    
+    memset(event, 0, sizeof(event_t));
+    event->id = (++event_counter) % 1000;
+
 
     // Special case for the head end
     if (first == NULL || first->time >= event->time)
@@ -104,7 +115,7 @@ bool EventList::AddEvent(event_t * event)
     return true;
 }
  
-bool EventList::DelEvent(unsigned char id)
+bool EventManager::DelEvent(unsigned char id)
 {
     bool res;
     event_t * ptr_pre = NULL;
@@ -134,12 +145,6 @@ bool EventList::DelEvent(unsigned char id)
 	{
             // Update the list
             ptr_pre->next = ptr_del->next;
-            // If it is the last node, update the tail
-	    /*
-            if (ptr_del == _pTail) {
-                _pTail = ptr_pre;
-            }
-	    */
             delete ptr_del;
             res = true;
 	    goto end;
@@ -159,7 +164,7 @@ end:
     return res;
 }
 
-void EventList::DelAllEvent(void)
+void EventManager::DelAllEvent(void)
 {
     event_t * ptr = NULL;
     event_t * ptr_next = NULL;
@@ -180,7 +185,7 @@ void EventList::DelAllEvent(void)
     return;
 }
 
-event_t * EventList::GetFirstEvent(void)
+event_t * EventManager::GetFirstEvent(void)
 {
     event_t * current;
 
@@ -196,8 +201,8 @@ event_t * EventList::GetFirstEvent(void)
 
 }
 
-unsigned char EventList::GetEventBefore(time_t time, 
-					event_t ** event_array)
+unsigned char EventManager::GetEventBefore(time_t time, 
+					   event_t ** event_array)
 {
     event_t * ptr = first;
     unsigned char i = 0;
@@ -219,23 +224,6 @@ unsigned char EventList::GetEventBefore(time_t time,
     event_array = return_array;
     return i;
 }
-
-// -------- EventManager
-
-EventManager::EventManager(void)
-{
-    unsigned char i;
-
-    for (i = 1; i < 8; i++)
-    {
-	RestoreDay((timeDayOfWeek_t)(i));
-    }
-}
-
-EventManager::~EventManager(void)
-{
-}
-
 
 void EventManager::RestoreDay(timeDayOfWeek_t day)
 {
@@ -271,7 +259,7 @@ void EventManager::RestoreDay(timeDayOfWeek_t day)
 	    continue;
 	}
 
-	list.AddEvent(list.CreateEvent(time_event, programEvent[i].action));
+	AddEvent(time_event, programEvent[i].action);
     }
 }
 
@@ -282,7 +270,7 @@ unsigned char EventManager::GetEventToday(event_t ** event_array)
     // remove hours and minutes
     time_searching = previousMidnight(now()) + SECS_PER_DAY;
 
-    return list.GetEventBefore(time_searching, event_array);
+    return GetEventBefore(time_searching, event_array);
 }
 
 unsigned char EventManager::GetEventTomorrow(event_t ** event_array)
@@ -292,7 +280,7 @@ unsigned char EventManager::GetEventTomorrow(event_t ** event_array)
     // remove hours and minutes
     time_searching = previousMidnight(now()) + 2*SECS_PER_DAY;
 
-    return list.GetEventBefore(time_searching, event_array);
+    return GetEventBefore(time_searching, event_array);
 }
 
 unsigned char EventManager::GetEventDayAfterTomorrow(event_t ** event_array)
@@ -302,5 +290,5 @@ unsigned char EventManager::GetEventDayAfterTomorrow(event_t ** event_array)
     // remove hours and minutes
     time_searching = previousMidnight(now()) + 3*SECS_PER_DAY;
 
-    return list.GetEventBefore(time_searching, event_array);
+    return GetEventBefore(time_searching, event_array);
 }
