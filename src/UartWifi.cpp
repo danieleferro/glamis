@@ -1,24 +1,24 @@
-#include "UartWIFI.h"
+#include "UartWifi.h"
 
 #define DEBUG                     1
 
 #ifdef DEBUG
-#define dbg(fmt, args...)         printf("UartWIFI: "fmt, ## args)
+#define dbg(fmt, args...)         printf("UartWifi: "fmt, ## args)
 #else
 #define dbg(fmt, args...)
 #endif
 
-UartWIFI::UartWIFI(void) :
+UartWifi::UartWifi(void) :
     esp8266(ESP_RX_PIN, ESP_TX_PIN)
 {
 } 
 
-UartWIFI::~UartWIFI(void)
+UartWifi::~UartWifi(void)
 {
 }
 
 
-bool UartWIFI::Begin(void)
+bool UartWifi::Begin(void)
 {
     // the default baud rate of ESP8266 is 115200
     esp8266.begin(115200);	
@@ -64,7 +64,7 @@ bool UartWIFI::Begin(void)
 		false	-	unsuccessfully
 
 ***************************************************************************/
-bool UartWIFI::Initialize(byte mode, String ssid, String pwd, byte chl, byte ecn)
+bool UartWifi::Initialize(byte mode, String ssid, String pwd, byte chl, byte ecn)
 {
     if (mode == STA)
     {	
@@ -121,7 +121,7 @@ bool UartWIFI::Initialize(byte mode, String ssid, String pwd, byte chl, byte ecn
 		false	-	unsuccessfully
 
 ***************************************************************************/
-bool UartWIFI::IpConfig(byte type, String addr, int port, bool a, byte id)
+bool UartWifi::IpConfig(byte type, String addr, int port, bool a, byte id)
 {
     bool result = false;
     if (a == 0 )
@@ -167,7 +167,7 @@ bool UartWIFI::IpConfig(byte type, String addr, int port, bool a, byte id)
 	
 
 ***************************************************************************/
-int UartWIFI::ReceiveMessage(char *buf, unsigned char buf_length)
+int UartWifi::ReceiveMessage(char *buf, unsigned char buf_length)
 {
     //+IPD,<len>:<data>
     //+IPD,<id>,<len>:<data>
@@ -257,7 +257,7 @@ int UartWIFI::ReceiveMessage(char *buf, unsigned char buf_length)
 
 
 ***************************************************************************/
-void UartWIFI::Reset(void)
+void UartWifi::Reset(void)
 {
     esp8266.println("AT+RST");
     unsigned long start;
@@ -289,7 +289,7 @@ void UartWIFI::Reset(void)
 		AP+Station
 
 ***************************************************************************/
-String UartWIFI::showMode()
+String UartWifi::showMode()
 {
     String data;
     esp8266.println("AT+CWMODE?");  
@@ -337,7 +337,7 @@ String UartWIFI::showMode()
 
 ***************************************************************************/
 
-bool UartWIFI::confMode(byte a)
+bool UartWifi::confMode(byte a)
 {
     String data;
     esp8266.print("AT+CWMODE=");  
@@ -374,7 +374,7 @@ bool UartWIFI::confMode(byte a)
 
 ***************************************************************************/
 
-String UartWIFI::showAP(void)
+String UartWifi::showAP(void)
 {
     String data;
     esp8266.flush();
@@ -420,7 +420,7 @@ String UartWIFI::showAP(void)
 		
 
 ***************************************************************************/
-String UartWIFI::showJAP(void)
+String UartWifi::showJAP(void)
 {
     esp8266.flush();
     esp8266.println("AT+CWJAP?");  
@@ -459,7 +459,7 @@ String UartWIFI::showJAP(void)
 		
 
 ***************************************************************************/
-bool UartWIFI::confJAP(String ssid , String pwd)
+bool UartWifi::confJAP(String ssid , String pwd)
 {
 	
     esp8266.print("AT+CWJAP=");
@@ -495,7 +495,7 @@ bool UartWIFI::confJAP(String ssid , String pwd)
 
 ***************************************************************************/
 
-bool UartWIFI::quitAP(void)
+bool UartWifi::quitAP(void)
 {
     esp8266.println("AT+CWQAP");
     unsigned long start;
@@ -518,7 +518,7 @@ bool UartWIFI::quitAP(void)
 			mySAP:<SSID>,<password>,<channel>,<encryption>
 
 ***************************************************************************/
-String UartWIFI::showSAP()
+String UartWifi::showSAP()
 {
     esp8266.println("AT+CWSAP?");  
     String data;
@@ -555,7 +555,7 @@ String UartWIFI::showSAP()
 
 ***************************************************************************/
 
-bool UartWIFI::confSAP(String ssid , String pwd , byte chl , byte ecn)
+bool UartWifi::confSAP(String ssid , String pwd , byte chl , byte ecn)
 {
     esp8266.print("AT+CWSAP=");  
     esp8266.print("\"");     //"ssid"
@@ -607,7 +607,7 @@ bool UartWIFI::confSAP(String ssid , String pwd , byte chl , byte ecn)
 
 ***************************************************************************/
 
-String UartWIFI::showStatus(void)
+String UartWifi::showStatus(void)
 {
     esp8266.println("AT+CIPSTATUS");  
     String data;
@@ -643,7 +643,7 @@ String UartWIFI::showStatus(void)
 			1	-	multiple
 
 ***************************************************************************/
-String UartWIFI::showMux(void)
+String UartWifi::showMux(void)
 {
     String data;
     esp8266.println("AT+CIPMUX?");  
@@ -683,7 +683,7 @@ String UartWIFI::showMux(void)
 		true	-	successfully
 		false	-	unsuccessfully
 ***************************************************************************/
-bool UartWIFI::confMux(bool a)
+bool UartWifi::confMux(bool a)
 {
     esp8266.print("AT+CIPMUX=");
     esp8266.println(a);           
@@ -715,7 +715,7 @@ bool UartWIFI::confMux(bool a)
 		false	-	unsuccessfully
 
 ***************************************************************************/
-bool UartWIFI::newMux(byte type, String addr, int port)
+bool UartWifi::newMux(byte type, String addr, int port)
 
 {
     String data;
@@ -766,7 +766,7 @@ bool UartWIFI::newMux(byte type, String addr, int port)
 		false	-	unsuccessfully
 
 ***************************************************************************/
-bool UartWIFI::newMux( byte id, byte type, String addr, int port)
+bool UartWifi::newMux( byte id, byte type, String addr, int port)
 
 {
 
@@ -818,7 +818,7 @@ bool UartWIFI::newMux( byte id, byte type, String addr, int port)
 		false	-	unsuccessfully
 
 ***************************************************************************/
-bool UartWIFI::Send(String str)
+bool UartWifi::Send(String str)
 {
     esp8266.print("AT+CIPSEND=");
 //    esp8266.print("\"");
@@ -871,7 +871,7 @@ bool UartWIFI::Send(String str)
 		false	-	unsuccessfully
 
 ***************************************************************************/
-bool UartWIFI::Send(byte id, String str)
+bool UartWifi::Send(byte id, String str)
 {
     esp8266.print("AT+CIPSEND=");
 
@@ -918,7 +918,7 @@ bool UartWIFI::Send(byte id, String str)
 
 
 ***************************************************************************/
-void UartWIFI::closeMux(void)
+void UartWifi::closeMux(void)
 {
     esp8266.println("AT+CIPCLOSE");
 
@@ -945,7 +945,7 @@ void UartWIFI::closeMux(void)
 	id:	id number(0-4)
 
 ***************************************************************************/
-void UartWIFI::closeMux(byte id)
+void UartWifi::closeMux(byte id)
 {
     esp8266.print("AT+CIPCLOSE=");
     esp8266.println(String(id));
@@ -972,7 +972,7 @@ void UartWIFI::closeMux(byte id)
 	return:	string of ip address
 
 ***************************************************************************/
-String UartWIFI::showIP(void)
+String UartWifi::showIP(void)
 {
     String data;
     unsigned long start;
@@ -1024,7 +1024,7 @@ String UartWIFI::showIP(void)
 
 ***************************************************************************/
 
-bool UartWIFI::confServer(byte mode, int port)
+bool UartWifi::confServer(byte mode, int port)
 {
     esp8266.print("AT+CIPSERVER=");  
     esp8266.print(String(mode));
@@ -1051,7 +1051,7 @@ bool UartWIFI::confServer(byte mode, int port)
 }
 
 
-unsigned char UartWIFI::getchlID(void)
+unsigned char UartWifi::GetChlID(void)
 {
     return chlID;
 }

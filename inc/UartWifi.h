@@ -33,12 +33,12 @@
 #define SERIAL_TX_BUFFER_SIZE 128
 #define SERIAL_RX_BUFFER_SIZE 128
 
-class UartWIFI
+class UartWifi
 {
 public:
 
-    UartWIFI(void);
-    ~UartWIFI(void);
+    UartWifi(void);
+    ~UartWifi(void);
 
     bool Begin(void);
     
@@ -98,7 +98,7 @@ public:
 	
     // client id(0-4)
     unsigned char chlID;		
-    unsigned char getchlID(void);
+    unsigned char GetChlID(void);
 
     String m_rev;
 
