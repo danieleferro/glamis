@@ -5,6 +5,8 @@
 #define END_BYTE               0xa3
 
 #include "CommandInterface.h"
+#include "EventManager.h"
+#include "Time.h"
 
 class CentralManager
 {
@@ -19,11 +21,17 @@ public:
 private:
     
     bool CheckIntegrity(unsigned char data_len);
-    unsigned char PrepareResponse(command_t command);
 
+    unsigned char PrepareResponseList(time_t time);
+
+
+    unsigned char PrepareResponseOK(void);
+    unsigned char PrepareResponseKO(void);
 
     char * buffer;
     unsigned char buffer_size;
+
+    EventManager event_manager;
 };
 
 #endif // __CENTRAL_MANAGER_HEADER

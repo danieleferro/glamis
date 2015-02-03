@@ -39,7 +39,9 @@ public:
     unsigned char EventNumber(void);
     bool AddEvent(time_t time, action_t action);
     bool DelEvent(unsigned char id);
-    event_t * GetFirstEvent(void);
+    event_t * PopFirstEvent(void);
+
+    event_t * GetRoot(void);
 
     void RestoreDay(timeDayOfWeek_t day);
     unsigned char GetEventToday(event_t ** event_array);

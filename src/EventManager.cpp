@@ -185,7 +185,12 @@ void EventManager::DelAllEvent(void)
     return;
 }
 
-event_t * EventManager::GetFirstEvent(void)
+event_t * EventManager::GetRoot(void)
+{
+    return first;
+}
+
+event_t * EventManager::PopFirstEvent(void)
 {
     event_t * current;
 
