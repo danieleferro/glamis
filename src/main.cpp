@@ -8,8 +8,9 @@
 
 
 UartWifi wifi;
-#define SSID       "AUCT"
-#define PASSWORD   "inserimentoforzato"
+#define WIFI_SSID       "AUCT"
+#define WIFI_PASSWORD   "inserimentoforzato"
+#define WIFI_CHANNEL    1
 
 void setup(void) 
 {
@@ -25,7 +26,9 @@ void setup(void)
 
     // -- WIFI
     wifi.Begin();
-    res = wifi.Initialize(STA, SSID, PASSWORD);
+    res = wifi.Initialize(STA, WIFI_SSID, WIFI_PASSWORD,
+			  WIFI_CHANNEL, ENCR_WAP_PSK);
+
     if(!res)
     {
 	Serial.println("Main, wifi init error");
