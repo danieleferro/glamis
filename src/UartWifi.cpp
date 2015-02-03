@@ -8,9 +8,11 @@
 #define dbg(fmt, args...)
 #endif
 
-UartWifi::UartWifi(void) :
-    esp8266(ESP_RX_PIN, ESP_TX_PIN)
+UartWifi::UartWifi(unsigned int rx_pin, unsigned int tx_pin) :
+    esp8266(rx_pin, tx_pin)
 {
+    pinMode(rx_pin, INPUT);
+    pinMode(tx_pin, OUTPUT);
 } 
 
 UartWifi::~UartWifi(void)
@@ -18,7 +20,7 @@ UartWifi::~UartWifi(void)
 }
 
 
-bool UartWifi::Begin(void)
+bool UartWifi::Begin(unsigned long baud)
 {
     // the default baud rate of ESP8266 is 115200
     esp8266.begin(115200);	

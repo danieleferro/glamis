@@ -4,11 +4,6 @@
 #include <SoftwareSerial.h>
 #include <Arduino.h>
 
-#define    ESP_TX_PIN             15
-#define    ESP_RX_PIN             16
-// #define    ESP_RES_BUFFER        128
-
-
 // The way of encrypstion
 #define    ENCR_OPEN          0
 #define    ENCR_WEP           1
@@ -37,10 +32,10 @@ class UartWifi
 {
 public:
 
-    UartWifi(void);
+    UartWifi(unsigned int rx_pin, unsigned int tx_pin);
     ~UartWifi(void);
 
-    bool Begin(void);
+    bool Begin(unsigned long baud);
     
     // Initialize port
     bool Initialize(byte mode, String ssid, String pwd, byte chl = 1, byte ecn = 2);

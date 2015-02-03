@@ -5,13 +5,16 @@
 #include "CentralManager.h"
 #include "Rele.h"
 
-#define RELE_PIN            13
+#define RELE_PIN               13
+#define ESP_TX_PIN             15
+#define ESP_RX_PIN             16
+#define ESP_BAUD               115200
 
 
-#define WIFI_SSID       "AUCT"
-#define WIFI_PASSWORD   "inserimentoforzato"
-#define WIFI_CHANNEL    1
-UartWifi wifi;
+#define WIFI_SSID              "AUCT"
+#define WIFI_PASSWORD          "inserimentoforzato"
+#define WIFI_CHANNEL           1
+UartWifi wifi(ESP_RX_PIN, ESP_TX_PIN);
 
 
 #define BUFFER_SIZE        128
@@ -28,11 +31,8 @@ void setup(void)
     for (int i = 0; i < 512; i++)	
 	EEPROM.write(i, 0);
 
-    // -- GPIO
-    pinMode(RELE_PIN, OUTPUT);
-
     // -- WIFI
-    wifi.Begin();
+    wifi.Begin(ESP_BAUD);
     res = wifi.Initialize(STA, WIFI_SSID, WIFI_PASSWORD,
 			  WIFI_CHANNEL, ENCR_WAP_PSK);
 
