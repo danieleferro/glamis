@@ -73,10 +73,9 @@ void loop(void)
 	Serial.println(buf); 
     }   
     
-    // 2. parse data and execute command
+    // 2. parse data, execute command, prepare response
     // TODO
-    // 3. parse response and write response
-    // TODO
+    // 3. write response
     Serial.print("Send a message back to id ");
     Serial.print(chlID);
     Serial.println(":");
