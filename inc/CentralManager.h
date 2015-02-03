@@ -7,12 +7,13 @@
 #include "CommandInterface.h"
 #include "EventManager.h"
 #include "Time.h"
+#include "Rele.h"
 
 class CentralManager
 {
 
 public:
-    CentralManager(void);
+    CentralManager(unsigned int rele_pin, bool rele_mode_nc);
     ~CentralManager(void);
 
     void SetBuffer(char * buff, unsigned char buff_size);
@@ -32,6 +33,7 @@ private:
     unsigned char buffer_size;
 
     EventManager event_manager;
+    Rele rele;
     timeDayOfWeek_t day;
 };
 

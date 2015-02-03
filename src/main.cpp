@@ -3,21 +3,20 @@
 #include "core.h"
 #include "UartWifi.h"
 #include "CentralManager.h"
+#include "Rele.h"
 
 #define RELE_PIN            13
-#define RELE_MODE_NC         1
 
 
-UartWifi wifi;
 #define WIFI_SSID       "AUCT"
 #define WIFI_PASSWORD   "inserimentoforzato"
 #define WIFI_CHANNEL    1
+UartWifi wifi;
 
-
-CentralManager manager;
 
 #define BUFFER_SIZE        128
 char buffer[BUFFER_SIZE];
+CentralManager manager(RELE_PIN, RELE_MODE_NC);
 
 
 void setup(void) 

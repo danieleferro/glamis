@@ -10,8 +10,10 @@
 #define dbg(fmt, args...)
 #endif
 
-CentralManager::CentralManager(void)
+CentralManager::CentralManager(unsigned int rele_pin, bool rele_mode) :
+    rele(rele_pin, rele_mode)
 {
+
     day = (timeDayOfWeek_t) weekday();
 }
 
@@ -93,12 +95,14 @@ unsigned char CentralManager::ProcessData(unsigned char data_len)
 
     case POWER_ON:
 	// move rele'
+	rele.Active();
 	// response
 	res_len = PrepareResponseOK();
 	break;
 
     case POWER_OFF:
 	// move rele'
+	rele.Deactive();
 	// response
 	res_len = PrepareResponseOK();
 	break;
@@ -269,9 +273,11 @@ void CentralManager::ProcessEvent(void)
 	{
 	case ON:	
 	    dbg("ProcessEvent, action ON\n");
+	    rele.Active();
 	    break;
 	case OFF:
 	    dbg("ProcessEvent, action OFF\n");
+	    rele.Deactive();
 	    break;
 	default:
 	    dbg("ProcessEvent, invalid action %02d\n", event->action);
