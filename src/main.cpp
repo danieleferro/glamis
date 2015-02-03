@@ -55,21 +55,20 @@ void setup(void)
 
     // -- MANAGER
     manager.SetBuffer(buffer, BUFFER_SIZE);
-	
+    
 }
 
 void loop(void)
 {
     int iLen, oLen;
     unsigned char chlID;
-
+    
     // event manager
-    // 1. check if there is event to process
-    // TODO
-    // 2. execute command
-    // TODO
-    // 3. reload events
-    // TODO
+    // 1. check and process event
+    manager.ProcessEvent();
+
+    // 2. reload events
+    manager.ReloadEvents();
 
     // network
     // 1. read data from wifi
@@ -95,8 +94,8 @@ void loop(void)
 	Serial.println(buffer);      
 	wifi.Send(chlID, buffer);
     }
-
-    // delay
-    delay(100);
+    wifi.closeMux(chlID);
     
+    // delay
+    delay(1000);    
 }

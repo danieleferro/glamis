@@ -12,6 +12,7 @@
 
 CentralManager::CentralManager(void)
 {
+    day = (timeDayOfWeek_t) weekday();
 }
 
 CentralManager::~CentralManager(void)
@@ -21,7 +22,9 @@ CentralManager::~CentralManager(void)
 void CentralManager::SetBuffer(char * buff, unsigned char buff_size)
 {
     this->buffer = buff;
-    this->buffer_size = buff_size;    
+    this->buffer_size = buff_size;
+
+    return;
 }
 
 // read data and prepare response in the same buffer
@@ -102,7 +105,7 @@ unsigned char CentralManager::ProcessData(unsigned char data_len)
 	
     default:
 	dbg("Command not recognized (0x2d)\n", buffer[1]);
-	res_len = 0;
+	res_len = PrepareResponseKO();
     }
     
 
@@ -250,4 +253,54 @@ unsigned char CentralManager::PrepareResponseList(time_t time)
 
     return i;
 
+}
+
+void CentralManager::ProcessEvent(void)
+{
+    event_t * event;
+    
+    event = event_manager.GetRoot();
+
+    while (event->time <= now())
+    {
+	// remove event from list
+	event_manager.PopFirstEvent();
+	switch (event->action)
+	{
+	case ON:	
+	    dbg("ProcessEvent, action ON\n");
+	    break;
+	case OFF:
+	    dbg("ProcessEvent, action OFF\n");
+	    break;
+	default:
+	    dbg("ProcessEvent, invalid action %02d\n", event->action);
+	}
+
+	event = event_manager.GetRoot();
+    }
+
+    return;
+}
+
+void CentralManager::ReloadEvents(void)
+{
+    unsigned char lapse;
+    unsigned char i;
+
+    if (day == (timeDayOfWeek_t) weekday())
+	return;
+
+    // add days
+    lapse = abs(weekday() - day);
+    
+    for (i = 0; i < lapse; i++)
+    {
+	dbg("ReloadEvent for day %sd\n", dayStr((timeDayOfWeek_t)(day+i)));
+	event_manager.RestoreDay((timeDayOfWeek_t)(day+i));
+    }
+
+    day = (timeDayOfWeek_t) weekday();
+
+    return;
 }

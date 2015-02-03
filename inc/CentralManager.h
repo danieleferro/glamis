@@ -17,14 +17,14 @@ public:
 
     void SetBuffer(char * buff, unsigned char buff_size);
     unsigned char ProcessData(unsigned char data_len);
+    void ProcessEvent(void);
+    void ReloadEvents(void);
 
 private:
     
     bool CheckIntegrity(unsigned char data_len);
 
     unsigned char PrepareResponseList(time_t time);
-
-
     unsigned char PrepareResponseOK(void);
     unsigned char PrepareResponseKO(void);
 
@@ -32,6 +32,7 @@ private:
     unsigned char buffer_size;
 
     EventManager event_manager;
+    timeDayOfWeek_t day;
 };
 
 #endif // __CENTRAL_MANAGER_HEADER
