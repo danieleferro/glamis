@@ -1,7 +1,6 @@
 #include "EventManager.h"
 #include <Arduino.h>
 
-#define MAX_EVENT_RETURN               128
 #define MAX_EVENT_LIST                 255
 
 #define DEBUG                1
@@ -34,7 +33,6 @@ EventManager::EventManager(void)
     unsigned char i;
 
     this->first = NULL;
-    this->return_array = (event_t**) malloc(sizeof(event_t*)*MAX_EVENT_RETURN);
 
     for (i = 1; i < 8; i++)
     {
@@ -44,7 +42,6 @@ EventManager::EventManager(void)
 
 EventManager::~EventManager(void)
 {
-    free (return_array);
     DelAllEvent();
 }
 
@@ -206,30 +203,6 @@ event_t * EventManager::PopFirstEvent(void)
 
 }
 
-unsigned char EventManager::GetEventBefore(time_t time, 
-					   event_t ** event_array)
-{
-    event_t * ptr = first;
-    unsigned char i = 0;
-    
-    while (ptr)
-    {
-	if (ptr->time <= time)
-	{
-	    return_array[i] = ptr;
-	    i++;
-	    ptr = ptr->next;
-	}
-	else {
-	    // event are time ordered
-	    break;
-	}
-    }
-  
-    event_array = return_array;
-    return i;
-}
-
 void EventManager::RestoreDay(timeDayOfWeek_t day)
 {
     unsigned char i;
@@ -243,7 +216,7 @@ void EventManager::RestoreDay(timeDayOfWeek_t day)
     time_day = previousMidnight(time_now);
 
     // add days
-    time_day += abs(weekday(time_now) - day)*SECS_PER_DAY;
+    time_day += abs(weekday() - day)*SECS_PER_DAY;
 
     for (i = 0; i < sizeof(programEvent)/sizeof(fixedEvent_t); i++) 
     {
@@ -268,32 +241,3 @@ void EventManager::RestoreDay(timeDayOfWeek_t day)
     }
 }
 
-unsigned char EventManager::GetEventToday(event_t ** event_array)
-{
-    time_t time_searching;
-
-    // remove hours and minutes
-    time_searching = previousMidnight(now()) + SECS_PER_DAY;
-
-    return GetEventBefore(time_searching, event_array);
-}
-
-unsigned char EventManager::GetEventTomorrow(event_t ** event_array)
-{
-    time_t time_searching;
-
-    // remove hours and minutes
-    time_searching = previousMidnight(now()) + 2*SECS_PER_DAY;
-
-    return GetEventBefore(time_searching, event_array);
-}
-
-unsigned char EventManager::GetEventDayAfterTomorrow(event_t ** event_array)
-{
-    time_t time_searching;
-
-    // remove hours and minutes
-    time_searching = previousMidnight(now()) + 3*SECS_PER_DAY;
-
-    return GetEventBefore(time_searching, event_array);
-}

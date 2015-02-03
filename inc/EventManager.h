@@ -44,16 +44,11 @@ public:
     event_t * GetRoot(void);
 
     void RestoreDay(timeDayOfWeek_t day);
-    unsigned char GetEventToday(event_t ** event_array);
-    unsigned char GetEventTomorrow(event_t ** event_array);
-    unsigned char GetEventDayAfterTomorrow(event_t ** event_array);
 
 private:
     event_t * first;
-    event_t ** return_array;
 
     void DelAllEvent(void);
-    unsigned char GetEventBefore(time_t time, event_t ** event_array);    
 
     static unsigned char event_counter;
 
