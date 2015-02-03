@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include "core.h"
 #include "UartWifi.h"
+#include "CentralManager.h"
 
 #define RELE_PIN            13
 #define RELE_MODE_NC         1
@@ -11,6 +12,13 @@ UartWifi wifi;
 #define WIFI_SSID       "AUCT"
 #define WIFI_PASSWORD   "inserimentoforzato"
 #define WIFI_CHANNEL    1
+
+
+CentralManager manager;
+
+#define BUFFER_SIZE        128
+char buffer[BUFFER_SIZE];
+
 
 void setup(void) 
 {
@@ -44,13 +52,15 @@ void setup(void)
     delay(100);
     if (wifi.confServer(OPEN, 8080))
 	Serial.println("Server is set up");
+
+    // -- MANAGER
+    manager.SetBuffer(buffer, BUFFER_SIZE);
 	
 }
 
 void loop(void)
 {
-    char buf[128];
-    int iLen;
+    int iLen, oLen;
     unsigned char chlID;
 
     // event manager
@@ -63,24 +73,28 @@ void loop(void)
 
     // network
     // 1. read data from wifi
-    iLen = wifi.ReceiveMessage(buf, 128);
+    iLen = wifi.ReceiveMessage(buffer, BUFFER_SIZE);
     chlID = wifi.GetChlID();
     if (iLen > 0)
     {
 	Serial.print("Get a message from id ");
 	Serial.print(chlID);
 	Serial.println(":");
-	Serial.println(buf); 
+	Serial.println(buffer); 
     }   
     
     // 2. parse data, execute command, prepare response
-    // TODO
+    oLen = manager.ProcessData(iLen);
+
     // 3. write response
-    Serial.print("Send a message back to id ");
-    Serial.print(chlID);
-    Serial.println(":");
-    Serial.println("HELLO BACK");      
-    wifi.Send(chlID, "HELLO BACK");
+    if (oLen > 0)
+    {
+	Serial.print("Send a message back to id ");
+	Serial.print(chlID);
+	Serial.println(":");
+	Serial.println(buffer);      
+	wifi.Send(chlID, buffer);
+    }
 
     // delay
     delay(100);
