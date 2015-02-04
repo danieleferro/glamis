@@ -4,7 +4,7 @@
 #define DEBUG                1
 
 #ifdef DEBUG
-#define dbg(fmt, args...)         printf("Rele: "fmt, ## args)
+#define dbg(fmt, args...)         printf("Relay: "fmt, ## args)
 #else
 #define dbg(fmt, args...)
 #endif
