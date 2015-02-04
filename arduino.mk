@@ -399,57 +399,81 @@ $(TARGET).hex: $(TARGET).elf
 .INTERMEDIATE: $(TARGET).elf
 
 $(TARGET).elf: $(ARDUINOLIB) $(OBJECTS)
+	@echo ""
+	@echo "Linking " $@
 	$(CC) $(LINKFLAGS) $(OBJECTS) $(ARDUINOLIB) -lm -o $@
 
 .obj/%.o: src/%.c
-	mkdir -p .obj
-	mkdir -p .dep/$(dir $<)
+	@echo ""
+	@echo "Compiling " $<
+	@mkdir -p .obj
+	@mkdir -p .dep/$(dir $<)
 	$(COMPILE.c) $(CPPDEPFLAGS) -o $@ $<
 
 .obj/%.o: src/%.cpp
-	mkdir -p .obj
-	mkdir -p .dep/$(dir $<)
+	@echo ""
+	@echo "Compiling " $<
+	@mkdir -p .obj
+	@mkdir -p .dep/$(dir $<)
 	$(COMPILE.cpp) $(CPPDEPFLAGS) -o $@ $<
 
 .obj/%.o: src/%.cc
-	mkdir -p .obj
-	mkdir -p .dep/$(dir $<)
+	@echo ""
+	@echo "Compiling " $<
+	@mkdir -p .obj
+	@mkdir -p .dep/$(dir $<)
 	$(COMPILE.cpp) $(CPPDEPFLAGS) -o $@ $<
 
 .obj/%.o: src/%.C
-	mkdir -p .obj
-	mkdir -p .dep/$(dir $<)
+	@echo ""
+	@echo "Compiling " $<
+	@mkdir -p .obj
+	@mkdir -p .dep/$(dir $<)
 	$(COMPILE.cpp) $(CPPDEPFLAGS) -o $@ $<
 
 .obj/%.o: src/%.ino
-	mkdir -p .obj
-	mkdir -p .dep/$(dir $<)
+	@echo ""
+	@echo "Compiling " $<
+	@mkdir -p .obj
+	@mkdir -p .dep/$(dir $<)
 	$(COMPILE.cpp) $(CPPDEPFLAGS) -o $@ $(CPPINOFLAGS) $<
 
 .obj/%.o: src/%.pde
-	mkdir -p .obj
-	mkdir -p .dep/$(dir $<)
+	@echo ""
+	@echo "Compiling " $<
+	@mkdir -p .obj
+	@mkdir -p .dep/$(dir $<)
 	$(COMPILE.cpp) $(CPPDEPFLAGS) -o $@ $(CPPINOFLAGS) $<
 
 # building the arduino library
 
 $(ARDUINOLIB): $(ARDUINOLIBOBJS)
+	@echo ""
+	@echo "Linking " $@
 	$(AR) rcs $@ $?
 
 .lib/%.c.o: %.c
-	mkdir -p $(dir $@)
+	@echo ""
+	@echo "Compiling " $<
+	@mkdir -p $(dir $@)
 	$(COMPILE.c) -o $@ $<
 
 .lib/%.cpp.o: %.cpp
-	mkdir -p $(dir $@)
+	@echo ""
+	@echo "Compiling " $<
+	@mkdir -p $(dir $@)
 	$(COMPILE.cpp) -o $@ $<
 
 .lib/%.cc.o: %.cc
-	mkdir -p $(dir $@)
+	@echo ""
+	@echo "Compiling " $<
+	@mkdir -p $(dir $@)
 	$(COMPILE.cpp) -o $@ $<
 
 .lib/%.C.o: %.C
-	mkdir -p $(dir $@)
+	@echo ""
+	@echo "Compiling " $<
+	@mkdir -p $(dir $@)
 	$(COMPILE.cpp) -o $@ $<
 
 # Local Variables:
