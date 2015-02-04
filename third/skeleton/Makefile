@@ -1,9 +1,10 @@
 INC := ../../inc
 
-TARGET  := serial_test.bin
+#  .bin for gitignore
+TARGET  := skeleton.bin
 CC      := g++
 # SOURCES := $(shell ls src/*.cpp)
-SOURCES := SerialParser.cpp main.cpp
+SOURCES := main.cpp
 OBJECTS := $(basename $(notdir $(SOURCES)))
 OBJECTS := $(patsubst %, .obj/%.o, $(OBJECTS))
 
