@@ -7,7 +7,7 @@
 #include "CommandInterface.h"
 #include "EventManager.h"
 #include "Time.h"
-#include "Rele.h"
+#include "Relay.h"
 
 class CentralManager
 {

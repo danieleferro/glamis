@@ -3,7 +3,7 @@
 #include "core.h"
 #include "UartWifi.h"
 #include "CentralManager.h"
-#include "Rele.h"
+#include "Relay.h"
 
 #define RELE_PIN               13
 #define ESP_TX_PIN             15

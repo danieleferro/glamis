@@ -1,4 +1,4 @@
-#include "Rele.h"
+#include "Relay.h"
 #include <Arduino.h>
 
 #define DEBUG                1
