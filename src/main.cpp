@@ -21,7 +21,6 @@ UartWifi wifi(ESP_RX_PIN, ESP_TX_PIN);
 char buffer[BUFFER_SIZE];
 CentralManager manager(RELE_PIN, RELE_MODE_NC);
 
-
 void setup(void) 
 {
     bool res;
