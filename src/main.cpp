@@ -27,7 +27,7 @@ void setup(void)
     String ipstring;
 
     // -- serial Debug
-    Serial.begin(9600);
+    Serial.begin(115200);
 
     // -- EEPROM
     for (int i = 0; i < 512; i++)	
@@ -64,6 +64,7 @@ void loop(void)
     int iLen, oLen;
     unsigned char chlID;
     
+/*
     // event manager
     // 1. check and process event
     manager.ProcessEvent();
@@ -96,7 +97,8 @@ void loop(void)
 	wifi.Send(chlID, buffer);
     }
     wifi.closeMux(chlID);
-    
+*/
+    Serial.print("Eccomi !\n");
     // delay
     delay(1000);    
 }

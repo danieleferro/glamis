@@ -161,6 +161,7 @@
 
 INC := inc/
 SOURCES := $(shell ls src/*.cpp)
+SERIALDEV := /dev/ttyUSB0
 
 # default arduino software directory, check software exists
 ifndef ARDUINODIR

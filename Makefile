@@ -1,4 +1,4 @@
 LIBRARIES := EEPROM Time TimeAlarms SoftwareSerial
-BOARD := nano
+BOARD := nano328
 TARGET := glamis
 include ./arduino.mk
