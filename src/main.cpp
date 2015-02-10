@@ -42,7 +42,7 @@ void setup(void)
     setTime(16, 26, 00, 10, 2, 2015);
 
     // -- EEPROM
-    for (int i = 0; i < 512; i++)	
+    for (int i = 0; i < 1024; i++)	
 	EEPROM.write(i, 0);
 
     /*
