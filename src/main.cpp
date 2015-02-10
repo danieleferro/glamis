@@ -5,6 +5,9 @@
 #include "CentralManager.h"
 #include "Relay.h"
 
+#define LED_PIN                13
+bool led_on = true;
+
 #define RELE_PIN               2
 #define ESP_TX_PIN             3
 #define ESP_RX_PIN             4
@@ -18,7 +21,7 @@
 UartWifi wifi(ESP_RX_PIN, ESP_TX_PIN);
 
 
-#define BUFFER_SIZE            64
+#define BUFFER_SIZE            128
 char buffer[BUFFER_SIZE];
 // CentralManager * manager;
 CentralManager manager(RELE_PIN, RELE_MODE_NC);
@@ -30,6 +33,10 @@ void setup(void)
 
     // -- serial Debug
     Serial.begin(115200);
+
+    // -- LED
+    pinMode(LED_PIN, OUTPUT);
+
 
     // -- TIME
     setTime(16, 26, 00, 10, 2, 2015);
@@ -77,8 +84,7 @@ void loop(void)
 {
     int iLen, oLen;
     unsigned char chlID;
-    
-/*
+ 
     // event manager
     // 1. check and process event
     manager.ProcessEvent();
@@ -86,6 +92,7 @@ void loop(void)
     // 2. reload events
     manager.ReloadEvents();
 
+/*
     // network
     // 1. read data from wifi
     iLen = wifi.ReceiveMessage(buffer, BUFFER_SIZE);
@@ -113,6 +120,9 @@ void loop(void)
     wifi.closeMux(chlID);
 */
     // serial_printf("ciao");
+    digitalWrite(LED_PIN, led_on);
+
+    led_on = !led_on;
     // delay
     delay(1000);    
 }
