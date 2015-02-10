@@ -1,17 +1,18 @@
 #include "EventManager.h"
 #include <Arduino.h>
+#include "core.h"
 
 #define MAX_EVENT_LIST                 255
 
 #define DEBUG                1
 
 #ifdef DEBUG
-#define dbg(fmt, args...)         printf("EventManager: "fmt, ## args)
+#define dbg(fmt, args...)         serial_printf_f(F(fmt), ## args)
 #else
 #define dbg(fmt, args...)
 #endif
 
-const fixedEvent_t programEvent[] =
+const fixedEvent_t programEvent[] PROGMEM =
 {
     {dowSunday, 10, 30, ON},
     {dowSunday, 12, 30, OFF},
@@ -45,17 +46,18 @@ EventManager::~EventManager(void)
     DelAllEvent();
 }
 
-unsigned char EventManager::EventNumber(void)
+unsigned int EventManager::EventNumber(void)
 {
-    unsigned char count = 0;
+    unsigned int count = 0;
     event_t * ptr = first;
     
     while (ptr)
-    {
-	dbg("Event %02d, %02d.%02d%04d-%02d:%02d:%02d\n",
-	    ptr->id, day(ptr->time), month(ptr->time), day(ptr->time),
+    {		
+	/*
+	dbg("CounterEvent %02d, %02d.%02d.%04d-%02d:%02d:%02d",
+	    ptr->id, day(ptr->time), month(ptr->time), year(ptr->time),
 	    hour(ptr->time), minute(ptr->time), second(ptr->time));
-
+	*/
 	count++;
 	ptr = ptr->next;
     }
@@ -71,7 +73,7 @@ bool EventManager::AddEvent(time_t time, action_t action)
     // check max size
     if (EventNumber() >= MAX_EVENT_LIST)
     {
-	dbg("EventManager max event reached\n");
+	dbg("EventManager max event reached");
 	return false;
     }
 
@@ -79,7 +81,7 @@ bool EventManager::AddEvent(time_t time, action_t action)
     
     if (!event)
     {
-	dbg("EventManager event not created\n");
+	dbg("EventManager event not created");
 	return false;
     }
     
@@ -105,9 +107,17 @@ bool EventManager::AddEvent(time_t time, action_t action)
         event->next = current->next;
         current->next = event;
     }
-
-    dbg("Event %02d added before event %02d\n",
-	event->id, event->next->id);
+    
+    if (event->next)
+    {
+	dbg("Event %02d added before event %02d",
+	    event->id, event->next->id);
+    }
+    else
+    {
+	dbg("Event %02d added as first",
+	    event->id);       
+    }
 
     return true;
 }
@@ -155,9 +165,9 @@ bool EventManager::DelEvent(unsigned char id)
 
 end:
     if (res)
-	dbg("Event %02d removed\n", id);
+	dbg("Event %02d removed", id);
     else
-	dbg("Event %02d NOT removed\n", id);
+	dbg("Event %02d NOT removed", id);
     return res;
 }
 
@@ -198,32 +208,44 @@ event_t * EventManager::PopFirstEvent(void)
 
     first = first->next;
 
-    dbg("Event %02d enqueued\n", current->id);
+    dbg("Event %02d enqueued", current->id);
     return current;   
 
 }
 
-void EventManager::RestoreDay(timeDayOfWeek_t day)
+void EventManager::RestoreDay(timeDayOfWeek_t input_day)
 {
     unsigned char i;
     time_t time_now, time_day, time_event;
+    event_t * ptr;
 
-    dbg("EventManager restoring day %s", dayStr(day));
- 
+    dbg("EventManager restoring day %s", dayStr(input_day));
+    dbg("Event before %d", EventNumber());
+
     // getting time now
     time_now = now();
+    dbg("time_now %02d.%02d.%04d-%02d:%02d:%02d",
+	day(time_now), month(time_now), year(time_now),
+	hour(time_now), minute(time_now), second(time_now));
+    
     // remove hours and minutes
-    time_day = previousMidnight(time_now);
+    time_day = previousMidnight(time_now);    
 
     // add days
-    time_day += abs(weekday() - day)*SECS_PER_DAY;
+    time_day += (input_day - weekday())*SECS_PER_DAY;
+    dbg("time_day %02d.%02d.%04d-%02d:%02d:%02d",
+	day(time_day), month(time_day), year(time_day),
+	hour(time_day), minute(time_day), second(time_day));
 
     for (i = 0; i < sizeof(programEvent)/sizeof(fixedEvent_t); i++) 
     {
 
-	if (programEvent[i].day != day)
+	if (programEvent[i].day != input_day)
 	{
 	    // wrong day
+	    dbg("Program event day %s, input day %s", 
+		dayStr(programEvent[i].day),
+		dayStr(input_day));
 	    continue;
 	}
 
@@ -233,11 +255,26 @@ void EventManager::RestoreDay(timeDayOfWeek_t day)
 
 	if (time_event < time_now)
 	{
-	    // elapsed event
+	    // elapsed event	
+	    dbg("Elapsed event %d\n", i);
 	    continue;
 	}
 
 	AddEvent(time_event, programEvent[i].action);
     }
+
+    // DEBUG purpose
+    dbg("Event List:");
+    ptr = first;
+    while (ptr)
+    {
+	dbg("Event %02d, %02d.%02d.%04d-%02d:%02d:%02d",
+	    ptr->id, day(ptr->time), month(ptr->time), year(ptr->time),
+	    hour(ptr->time), minute(ptr->time), second(ptr->time));
+	ptr = ptr->next;
+    }
+    dbg("");
+
+
 }
 

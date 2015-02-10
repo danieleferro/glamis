@@ -1,9 +1,10 @@
 #include "UartWifi.h"
+#include "core.h"
 
 #define DEBUG                     1
 
 #ifdef DEBUG
-#define dbg(fmt, args...)         printf("UartWifi: "fmt, ## args)
+#define dbg(fmt, args...)         serial_printf_f(F(fmt), ## args)
 #else
 #define dbg(fmt, args...)
 #endif
@@ -29,16 +30,16 @@ bool UartWifi::Begin(unsigned long baud)
     esp8266.setTimeout(3000);
 
     esp8266.println("AT+RST");
-    dbg("AT+RST\r\n");
+    dbg("AT+RST");
 
     if(esp8266.find("OK"))
     {
-	dbg("Module is ready\r\n");
+	dbg("Module is ready");
 	return true;
     }
     else
     {
-	dbg("Module have no response\r\n");
+	dbg("Module have no response");
 	return false;
     }
 
@@ -218,7 +219,7 @@ int UartWifi::ReceiveMessage(char *buf, unsigned char buf_length)
 	    }
 	    int iSize;
 	    //dbg(data);
-	    //dbg("\r\n");
+	    //dbg("");
 	    if(found ==true)
 	    {
 		String _id = data.substring(4, j);
@@ -237,7 +238,7 @@ int UartWifi::ReceiveMessage(char *buf, unsigned char buf_length)
 		String _size = data.substring(4, i);
 		iSize = _size.toInt();
 		//dbg(iSize);
-		//dbg("\r\n");
+		//dbg("");
 		String str = data.substring(i+1, i+1+iSize);
 		// strcpy(buf, str.c_str());
 		str.toCharArray(buf, buf_length);
@@ -267,7 +268,7 @@ void UartWifi::Reset(void)
     while (millis()-start<5000) {                            
         if(esp8266.find("ready")==true)
         {
-	    dbg("reboot wifi is OK\r\n");
+	    dbg("reboot wifi is OK");
 	    break;
         }
     }
@@ -978,7 +979,7 @@ String UartWifi::showIP(void)
 {
     String data;
     unsigned long start;
-    //dbg("AT+CIFSR\r\n");
+    //dbg("AT+CIFSR");
     for(int a=0; a<3;a++)
     {
 	esp8266.println("AT+CIFSR");  
@@ -1001,7 +1002,7 @@ String UartWifi::showIP(void)
 	data = "";
     }
     //dbg(data);
-    //dbg("\r\n");
+    //dbg("");
     char head[4] = {0x0D,0x0A};   
     char tail[7] = {0x0D,0x0D,0x0A};        
     data.replace("AT+CIFSR","");

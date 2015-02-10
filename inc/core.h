@@ -1,9 +1,10 @@
 #ifndef CORE_HEADER
 #define CORE_HEADER
 
-void printf(char *fmt, ... );
-void setup_serial(void);
-void setup_Mirf(void);
-void loop_Mirf(void);
+#include <stdarg.h>
+#include <Arduino.h>
+
+void serial_printf(char *fmt, ... );
+void serial_printf_f(const __FlashStringHelper *fmt, ... );
 
 #endif // CORE_HEADER

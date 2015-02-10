@@ -5,21 +5,23 @@
 #include "CentralManager.h"
 #include "Relay.h"
 
-#define RELE_PIN               13
-#define ESP_TX_PIN             15
-#define ESP_RX_PIN             16
+#define RELE_PIN               2
+#define ESP_TX_PIN             3
+#define ESP_RX_PIN             4
 #define ESP_BAUD               115200
 
 
 #define WIFI_SSID              "AUCT"
 #define WIFI_PASSWORD          "inserimentoforzato"
 #define WIFI_CHANNEL           1
-UartWifi wifi(ESP_RX_PIN, ESP_TX_PIN);
+// UartWifi * wifi;
+//UartWifi wifi(ESP_RX_PIN, ESP_TX_PIN);
 
 
-#define BUFFER_SIZE        128
+#define BUFFER_SIZE            64
 char buffer[BUFFER_SIZE];
-CentralManager manager(RELE_PIN, RELE_MODE_NC);
+CentralManager * manager;
+// CentralManager manager(RELE_PIN, RELE_MODE_NC);
 
 void setup(void) 
 {
@@ -29,11 +31,19 @@ void setup(void)
     // -- serial Debug
     Serial.begin(115200);
 
+    // -- TIME
+    setTime(16, 26, 00, 10, 2, 2015);
+
+    /*
     // -- EEPROM
     for (int i = 0; i < 512; i++)	
 	EEPROM.write(i, 0);
 
     // -- WIFI
+    */
+    // wifi = new UartWifi(ESP_RX_PIN, ESP_TX_PIN);
+    /*
+
     wifi.Begin(ESP_BAUD);
     res = wifi.Initialize(STA, WIFI_SSID, WIFI_PASSWORD,
 			  WIFI_CHANNEL, ENCR_WAP_PSK);
@@ -55,8 +65,11 @@ void setup(void)
 	Serial.println("Server is set up");
 
     // -- MANAGER
+    */
+    manager = new CentralManager(RELE_PIN, RELE_MODE_NC);
+/*
     manager.SetBuffer(buffer, BUFFER_SIZE);
-    
+    */
 }
 
 void loop(void)
@@ -98,7 +111,7 @@ void loop(void)
     }
     wifi.closeMux(chlID);
 */
-    Serial.print("Eccomi !\n");
+    // serial_printf("ciao");
     // delay
     delay(1000);    
 }

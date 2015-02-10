@@ -1,15 +1,16 @@
 #include "Relay.h"
+#include "core.h"
 #include <Arduino.h>
 
 #define DEBUG                1
 
 #ifdef DEBUG
-#define dbg(fmt, args...)         printf("Relay: "fmt, ## args)
+#define dbg(fmt, args...)         serial_printf_f(F(fmt), ## args)
 #else
 #define dbg(fmt, args...)
 #endif
 
-Rele::Rele(unsigned int pin, bool mode_nc)
+Relay::Relay(unsigned int pin, bool mode_nc)
 {
     this->pin = pin;
     this->mode_nc = mode_nc;
@@ -17,35 +18,35 @@ Rele::Rele(unsigned int pin, bool mode_nc)
 }
 
 
-Rele::~Rele(void)
+Relay::~Relay(void)
 {
 }
 
 
-void Rele::Active(void)
+void Relay::Active(void)
 {
     if (mode_nc)
     {
-	dbg("Activing PIN %d LOW\n", pin);
+	dbg("Activing PIN %d LOW", pin);
 	digitalWrite(pin, LOW);
     }
     else    
     {
-	dbg("Activing PIN %d HIGH\n", pin);
+	dbg("Activing PIN %d HIGH", pin);
 	digitalWrite(pin, HIGH);
     }
 }
 
-void Rele::Deactive(void)
+void Relay::Deactive(void)
 {
     if (mode_nc)
     {
-	dbg("Activing PIN %d HIGH\n", pin);
+	dbg("Activing PIN %d HIGH", pin);
 	digitalWrite(pin, HIGH);
     }
     else    
     {
-	dbg("Activing PIN %d LOW\n", pin);
+	dbg("Activing PIN %d LOW", pin);
 	digitalWrite(pin, LOW);
     }
 }

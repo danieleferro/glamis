@@ -33,7 +33,7 @@ private:
     unsigned char buffer_size;
 
     EventManager event_manager;
-    Rele rele;
+    Relay rele;
     timeDayOfWeek_t day;
 };
 

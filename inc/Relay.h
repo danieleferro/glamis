@@ -4,12 +4,12 @@
 #define RELE_MODE_NC         1
 #define RELE_MODE_NO         0
 
-class Rele
+class Relay
 {
 
 public:
-    Rele(unsigned int pin, bool mode_nc);
-    ~Rele(void);
+    Relay(unsigned int pin, bool mode_nc);
+    ~Relay(void);
 
     void Active(void);
     void Deactive(void);

@@ -36,7 +36,7 @@ public:
     EventManager(void);
     ~EventManager(void);
 
-    unsigned char EventNumber(void);
+    unsigned int EventNumber(void);
     bool AddEvent(time_t time, action_t action);
     bool DelEvent(unsigned char id);
     event_t * PopFirstEvent(void);

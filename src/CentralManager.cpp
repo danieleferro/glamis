@@ -5,7 +5,7 @@
 #define DEBUG                1
 
 #ifdef DEBUG
-#define dbg(fmt, args...)         printf("CentralManager: "fmt, ## args)
+#define dbg(fmt, args...)         serial_printf_f(F(fmt), ## args)
 #else
 #define dbg(fmt, args...)
 #endif
@@ -13,7 +13,7 @@
 CentralManager::CentralManager(unsigned int rele_pin, bool rele_mode) :
     rele(rele_pin, rele_mode)
 {
-
+    dbg("constructor");
     day = (timeDayOfWeek_t) weekday();
 }
 
