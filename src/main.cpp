@@ -15,13 +15,13 @@
 #define WIFI_PASSWORD          "inserimentoforzato"
 #define WIFI_CHANNEL           1
 // UartWifi * wifi;
-//UartWifi wifi(ESP_RX_PIN, ESP_TX_PIN);
+UartWifi wifi(ESP_RX_PIN, ESP_TX_PIN);
 
 
 #define BUFFER_SIZE            64
 char buffer[BUFFER_SIZE];
-CentralManager * manager;
-// CentralManager manager(RELE_PIN, RELE_MODE_NC);
+// CentralManager * manager;
+CentralManager manager(RELE_PIN, RELE_MODE_NC);
 
 void setup(void) 
 {
@@ -34,11 +34,11 @@ void setup(void)
     // -- TIME
     setTime(16, 26, 00, 10, 2, 2015);
 
-    /*
     // -- EEPROM
     for (int i = 0; i < 512; i++)	
 	EEPROM.write(i, 0);
 
+    /*
     // -- WIFI
     */
     // wifi = new UartWifi(ESP_RX_PIN, ESP_TX_PIN);
@@ -66,8 +66,9 @@ void setup(void)
 
     // -- MANAGER
     */
-    manager = new CentralManager(RELE_PIN, RELE_MODE_NC);
-/*
+    // manager = new CentralManager(RELE_PIN, RELE_MODE_NC);
+    manager.Init();
+    /*
     manager.SetBuffer(buffer, BUFFER_SIZE);
     */
 }

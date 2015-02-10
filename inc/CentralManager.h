@@ -16,6 +16,8 @@ public:
     CentralManager(unsigned int rele_pin, bool rele_mode_nc);
     ~CentralManager(void);
 
+    void Init(void);
+
     void SetBuffer(char * buff, unsigned char buff_size);
     unsigned char ProcessData(unsigned char data_len);
     void ProcessEvent(void);

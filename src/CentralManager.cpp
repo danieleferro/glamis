@@ -13,12 +13,21 @@
 CentralManager::CentralManager(unsigned int rele_pin, bool rele_mode) :
     rele(rele_pin, rele_mode)
 {
-    dbg("constructor");
-    day = (timeDayOfWeek_t) weekday();
 }
 
 CentralManager::~CentralManager(void)
 {
+}
+
+void CentralManager::Init(void)
+{
+    day = (timeDayOfWeek_t) weekday();
+
+    unsigned char i;
+    for (i = 1; i < 8; i++)
+    {
+	event_manager.RestoreDay((timeDayOfWeek_t)(i));
+    }
 }
 
 void CentralManager::SetBuffer(char * buff, unsigned char buff_size)

@@ -1,6 +1,7 @@
 #include "EventManager.h"
-#include <Arduino.h>
 #include "core.h"
+#include <avr/pgmspace.h>
+#include <Arduino.h>
 
 #define MAX_EVENT_LIST                 255
 
@@ -12,7 +13,7 @@
 #define dbg(fmt, args...)
 #endif
 
-const fixedEvent_t programEvent[] PROGMEM =
+PROGMEM const fixedEvent_t programEvent[] =
 {
     {dowSunday, 10, 30, ON},
     {dowSunday, 12, 30, OFF},
@@ -31,14 +32,7 @@ unsigned char EventManager::event_counter = 0;
 
 EventManager::EventManager(void)
 {
-    unsigned char i;
-
     this->first = NULL;
-
-    for (i = 1; i < 8; i++)
-    {
-	RestoreDay((timeDayOfWeek_t)(i));
-    }
 }
 
 EventManager::~EventManager(void)
@@ -93,6 +87,7 @@ bool EventManager::AddEvent(time_t time, action_t action)
     if (first == NULL || first->time >= event->time)
     {
         event->next = first;
+	event->time = time;
         first = event;
     }
     else
@@ -105,6 +100,7 @@ bool EventManager::AddEvent(time_t time, action_t action)
             current = current->next;
         }
         event->next = current->next;
+	event->time = time;
         current->next = event;
     }
     
@@ -224,34 +220,44 @@ void EventManager::RestoreDay(timeDayOfWeek_t input_day)
 
     // getting time now
     time_now = now();
+    /*
     dbg("time_now %02d.%02d.%04d-%02d:%02d:%02d",
 	day(time_now), month(time_now), year(time_now),
 	hour(time_now), minute(time_now), second(time_now));
+    */
     
     // remove hours and minutes
     time_day = previousMidnight(time_now);    
 
     // add days
     time_day += (input_day - weekday())*SECS_PER_DAY;
+    /*
     dbg("time_day %02d.%02d.%04d-%02d:%02d:%02d",
 	day(time_day), month(time_day), year(time_day),
 	hour(time_day), minute(time_day), second(time_day));
+    */
 
     for (i = 0; i < sizeof(programEvent)/sizeof(fixedEvent_t); i++) 
     {
 
-	if (programEvent[i].day != input_day)
+	if (pgm_read_byte(&programEvent[i].day) != input_day)
 	{
 	    // wrong day
-	    dbg("Program event day %s, input day %s", 
-		dayStr(programEvent[i].day),
-		dayStr(input_day));
+	    /*
+	    dbg("Program event day %d, input day %d", 
+		programEvent[i].day,
+		input_day);
+	    */
 	    continue;
 	}
 
 	time_event = time_day
-	    + programEvent[i].hour*SECS_PER_HOUR
-	    + programEvent[i].minute*SECS_PER_MIN;
+	    + pgm_read_byte(&programEvent[i].hour)*SECS_PER_HOUR
+	    + pgm_read_byte(&programEvent[i].minute)*SECS_PER_MIN;
+
+	dbg("time_event %02d.%02d.%04d-%02d:%02d:%02d",
+	    day(time_event), month(time_event), year(time_event),
+	    hour(time_event), minute(time_event), second(time_event));
 
 	if (time_event < time_now)
 	{
@@ -260,7 +266,7 @@ void EventManager::RestoreDay(timeDayOfWeek_t input_day)
 	    continue;
 	}
 
-	AddEvent(time_event, programEvent[i].action);
+	AddEvent(time_event, (action_t) pgm_read_byte(&programEvent[i].action));
     }
 
     // DEBUG purpose

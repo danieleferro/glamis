@@ -23,8 +23,8 @@ struct event_t
 typedef struct
 {
     timeDayOfWeek_t day;
-    uint8_t minute; 
     uint8_t hour; 
+    uint8_t minute; 
     action_t action;
 } fixedEvent_t;
 
