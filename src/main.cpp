@@ -15,27 +15,26 @@
 #define dbg(fmt, args...)
 #endif
 
+// PIN 4 - 5 for I2C
 RTC_DS1307 rtc;
 
 #define LED_PIN                13
 bool led_on = true;
 
-#define RELE_PIN               2
+#define RELE_PIN               6
 #define ESP_TX_PIN             3
-#define ESP_RX_PIN             4
+#define ESP_RX_PIN             2
 #define ESP_BAUD               115200
 
 
 #define WIFI_SSID              "AUCT"
 #define WIFI_PASSWORD          "inserimentoforzato"
 #define WIFI_CHANNEL           1
-// UartWifi * wifi;
 UartWifi wifi(ESP_RX_PIN, ESP_TX_PIN);
 
 
 #define BUFFER_SIZE            128
 char buffer[BUFFER_SIZE];
-// CentralManager * manager;
 CentralManager manager(RELE_PIN, RELE_MODE_NC);
 
 void setup(void) 
@@ -55,7 +54,7 @@ void setup(void)
     rtc.begin();
     
     if (! rtc.isrunning()) {
-	Serial.println("RTC is NOT running!");
+	dbg("RTC is NOT running!");
 	// following line sets the RTC to the date & time this sketch was compiled
 	rtc.adjust(compile_time());
     }
@@ -120,10 +119,7 @@ void loop(void)
 	goto end;
     }
 
-    Serial.print("Get a message from id ");
-    Serial.print(chlID);
-    Serial.println(":");
-    Serial.println(buffer); 
+    dbg("Get a message from id % :\n%s", chlID, buffer);
     
     // 2. parse data, execute command, prepare response
     oLen = manager.ProcessData(iLen);
@@ -131,10 +127,7 @@ void loop(void)
     // 3. write response
     if (oLen > 0)
     {
-	Serial.print("Send a message back to id ");
-	Serial.print(chlID);
-	Serial.println(":");
-	Serial.println(buffer);      
+	dbg("Send a message back to id %d :\n%s", chlID, buffer);
 	wifi.Send(chlID, buffer);
     }
     wifi.closeMux(chlID);
