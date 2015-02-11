@@ -5,8 +5,8 @@
 
 typedef enum
 {
-    ON,
     OFF,
+    ON,
     ACTIONS_NUM
 }  action_t;
 
@@ -39,7 +39,7 @@ public:
     unsigned int EventNumber(void);
     bool AddEvent(time_t time, action_t action);
     bool DelEvent(unsigned char id);
-    event_t * PopFirstEvent(void);
+    void PopFirstEvent(void);
 
     event_t * GetRoot(void);
 
@@ -49,6 +49,7 @@ private:
     event_t * first;
 
     void DelAllEvent(void);
+    void PrintAllEvent(void);
 
     static unsigned char event_counter;
 
