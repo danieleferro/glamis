@@ -40,8 +40,8 @@ CentralManager manager(RELE_PIN, RELE_MODE_NC);
 
 void setup(void) 
 {
-    // bool res;
-    // String ipstring;
+    bool res;
+    String ipstring;
 
     // -- serial Debug
     Serial.begin(115200);
@@ -50,8 +50,6 @@ void setup(void)
     pinMode(LED_PIN, OUTPUT);
 
     // -- TIME
-    // setTime(16, 26, 00, 10, 2, 2015);
-    // setTime(compile_time());
 
     Wire.begin();
     rtc.begin();
@@ -70,48 +68,40 @@ void setup(void)
 	EEPROM.write(i, 0);
     */
 
-    /*
     // -- WIFI
-    */
-    // wifi = new UartWifi(ESP_RX_PIN, ESP_TX_PIN);
-    /*
-
     wifi.Begin(ESP_BAUD);
     res = wifi.Initialize(STA, WIFI_SSID, WIFI_PASSWORD,
 			  WIFI_CHANNEL, ENCR_WAP_PSK);
 
-    if(!res)
+    if (!res)
     {
-	Serial.println("Main, wifi init error");
+	dbg("Wifi init error");
     }
-
-    // make sure the module can have enough time to get an IP address
-    delay(4000); 
-    ipstring = wifi.showIP();
-    Serial.println(ipstring);
-    
-    delay(5000);
-    wifi.confMux(1);
-    delay(100);
-    if (wifi.confServer(OPEN, 8080))
-	Serial.println("Server is set up");
-
+    else
+    {
+	// make sure the module can have enough time to get an IP address
+	delay(4000); 
+	ipstring = wifi.showIP();
+	Serial.println(ipstring);
+	
+	delay(5000);
+	wifi.confMux(1);
+	delay(100);
+	if (wifi.confServer(OPEN, 8080))
+	    dbg("Server is set up");
+	else
+	    dbg("Server is NOT up");
+    }
     // -- MANAGER
-    */
-    // manager = new CentralManager(RELE_PIN, RELE_MODE_NC);
     manager.Init();
-    /*
     manager.SetBuffer(buffer, BUFFER_SIZE);
-    */
-
-
 
 }
 
 void loop(void)
 {
-    // int iLen, oLen;
-    // unsigned char chlID;
+    int iLen, oLen;
+    unsigned char chlID;
     time_t time_now;
  
     // event manager
@@ -121,7 +111,6 @@ void loop(void)
     // 2. reload events
     manager.ReloadEvents();
 
-/*
     // network
     // 1. read data from wifi
     iLen = wifi.ReceiveMessage(buffer, BUFFER_SIZE);
@@ -147,12 +136,13 @@ void loop(void)
 	wifi.Send(chlID, buffer);
     }
     wifi.closeMux(chlID);
-*/
-    // serial_printf("ciao");
+
+    // 4. led blink
     digitalWrite(LED_PIN, led_on);
 
     led_on = !led_on;
 
+    // 5. others
     time_now = now();
     dbg("Time now: %02d.%02d.%04d-%02d:%02d:%02d",
 	day(time_now), month(time_now), year(time_now),

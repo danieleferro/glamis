@@ -175,77 +175,77 @@ int UartWifi::ReceiveMessage(char *buf, unsigned char buf_length)
     //+IPD,<len>:<data>
     //+IPD,<id>,<len>:<data>
     String data = "";
-    if (esp8266.available()>0)
-    {
-	unsigned long start;
-	start = millis();
-	char c0 = esp8266.read();
-	if (c0 == '+')
+    
+    if (esp8266.available() <= 0)
+	return 0;
+
+    unsigned long start;
+    start = millis();
+    char c0 = esp8266.read();
+    if (c0 == '+')
+    {	
+	while (millis()-start<5000) 
 	{
-   
-	    while (millis()-start<5000) 
+	    if (esp8266.available()>0)
 	    {
-		if (esp8266.available()>0)
-		{
-		    char c = esp8266.read();
-		    data += c;
-		}
-		if (data.indexOf("\nOK")!=-1)
-		{
-		    break;
-		}
+		char c = esp8266.read();
+		data += c;
 	    }
-	    //Serial.println(data);
-	    // int sLen = strlen(data.c_str());
-	    int sLen = data.length();
-	    int i,j;
-	    for (i = 0; i <= sLen; i++)
+	    if (data.indexOf("\nOK")!=-1)
 	    {
-		if (data[i] == ':')
-		{
-		    break;
-		}
-		
+		break;
 	    }
-	    bool found = false;
-	    for (j = 4; j <= i; j++)
-	    {
-		if (data[j] == ',')
-		{
-		    found = true;
-		    break;
-		}
-		
-	    }
-	    int iSize;
-	    //dbg(data);
-	    //dbg("");
-	    if(found ==true)
-	    {
-		String _id = data.substring(4, j);
-		chlID = _id.toInt();
-		String _size = data.substring(j+1, i);
-		iSize = _size.toInt();
-		//dbg(_size);
-		String str = data.substring(i+1, i+1+iSize);
-		// strcpy(buf, str.c_str());
-		str.toCharArray(buf, buf_length);
-		//dbg(str);
-						
-	    }
-	    else
-	    {			
-		String _size = data.substring(4, i);
-		iSize = _size.toInt();
-		//dbg(iSize);
-		//dbg("");
-		String str = data.substring(i+1, i+1+iSize);
-		// strcpy(buf, str.c_str());
-		str.toCharArray(buf, buf_length);
-		//dbg(str);
-	    }
-	    return iSize;
 	}
+	//Serial.println(data);
+	// int sLen = strlen(data.c_str());
+	int sLen = data.length();
+	int i,j;
+	for (i = 0; i <= sLen; i++)
+	{
+	    if (data[i] == ':')
+	    {
+		break;
+	    }
+	    
+	}
+	bool found = false;
+	for (j = 4; j <= i; j++)
+	{
+	    if (data[j] == ',')
+	    {
+		found = true;
+		break;
+	    }
+	    
+	}
+	int iSize;
+	//dbg(data);
+	//dbg("");
+	if(found ==true)
+	{
+	    String _id = data.substring(4, j);
+	    chlID = _id.toInt();
+	    String _size = data.substring(j+1, i);
+	    iSize = _size.toInt();
+	    //dbg(_size);
+	    String str = data.substring(i+1, i+1+iSize);
+	    // strcpy(buf, str.c_str());
+	    str.toCharArray(buf, buf_length);
+	    //dbg(str);
+	    
+	}
+	else
+	{			
+	    String _size = data.substring(4, i);
+	    iSize = _size.toInt();
+	    //dbg(iSize);
+	    //dbg("");
+	    String str = data.substring(i+1, i+1+iSize);
+	    // strcpy(buf, str.c_str());
+	    str.toCharArray(buf, buf_length);
+	    //dbg(str);
+	}
+	return iSize;
     }
 	
     return 0;
