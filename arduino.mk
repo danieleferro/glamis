@@ -161,7 +161,6 @@
 
 INC := inc/
 SOURCES := $(shell ls src/*.cpp)
-SERIALDEV := /dev/ttyUSB0
 
 # default arduino software directory, check software exists
 ifndef ARDUINODIR
@@ -368,7 +367,8 @@ monitor:
 		echo "*GUESSING* at serial device:" $(SERIALDEV); \
 		echo; }
 #	screen $(SERIALDEV) 115200
-	minicom --device $(SERIALDEV)
+	@rm -f $(LOG_FILE)
+	minicom --device $(SERIALDEV) -C $(LOG_FILE)
 
 size: $(TARGET).elf
 	echo && $(AVRSIZE) --format=avr --mcu=$(BOARD_BUILD_MCU) $(TARGET).elf
