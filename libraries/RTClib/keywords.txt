@@ -1,25 +1,27 @@
 #######################################
-# Syntax Coloring Map For TimeAlarms
+# Syntax Coloring Map For RTC
 #######################################
 
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
 
+RTC_DS1307	KEYWORD1
+RTC_Millis	KEYWORD1
+Ds1307SqwPinMode	KEYWORD1
+
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
-alarmRepeat	KEYWORD2
-alarmOnce KEYWORD2
-timerRepeat	KEYWORD2
-timerOnce KEYWORD2
-delay KEYWORD2
-#######################################
-# Instances (KEYWORD2)
-#######################################
-Alarm KEYWORD2
+
+begin	KEYWORD2
+adjust	KEYWORD2
+isrunning	KEYWORD2
+now	KEYWORD2
+readSqwPinMode	KEYWORD2
+writeSqwPinMode	KEYWORD2
+
 #######################################
 # Constants (LITERAL1)
 #######################################
-dtINVALID_ALARM_ID LITERAL1
-dtINVALID_TIME     LITERAL1
+

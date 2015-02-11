@@ -1,5 +1,7 @@
 #include <EEPROM.h>
 #include <Arduino.h>
+#include <Wire.h>
+#include "RTClib.h"
 #include "Time.h"
 #include "core.h"
 #include "UartWifi.h"
@@ -12,6 +14,8 @@
 #else
 #define dbg(fmt, args...)
 #endif
+
+RTC_DS1307 rtc;
 
 #define LED_PIN                13
 bool led_on = true;
@@ -47,6 +51,24 @@ void setup(void)
 
     // -- TIME
     // setTime(16, 26, 00, 10, 2, 2015);
+    // setTime(compile_time());
+
+#ifdef AVR
+    Wire.begin();
+#else
+    Wire1.begin(); // Shield I2C pins connect to alt I2C bus on Arduino Due
+#endif
+    rtc.begin();
+    
+    if (! rtc.isrunning()) {
+	Serial.println("RTC is NOT running!");
+	// following line sets the RTC to the date & time this sketch was compiled
+	rtc.adjust(compile_time());
+	// This line sets the RTC with an explicit date & time, for example to set
+	// January 21, 2014 at 3am you would call:
+	// rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
+    }
+
     setTime(compile_time());
 
     // -- EEPROM

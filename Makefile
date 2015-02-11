@@ -1,4 +1,4 @@
-LIBRARIES := EEPROM Time TimeAlarms SoftwareSerial
+LIBRARIES := EEPROM Time SoftwareSerial RTClib Wire
 BOARD := nano328
 TARGET := glamis
 SERIALDEV := /dev/ttyUSB0
