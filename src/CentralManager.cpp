@@ -46,7 +46,7 @@ unsigned char CentralManager::ProcessData(unsigned char data_len)
 
     if (!CheckIntegrity(data_len))
     {
-	dbg("CheckIntegrity not passed");
+	// dbg("CheckIntegrity not passed");
 	return 0;
     }
 
