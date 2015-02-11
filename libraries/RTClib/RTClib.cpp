@@ -3,37 +3,22 @@
 
 #include <Wire.h>
 #include "RTClib.h"
-#ifdef __AVR__
 #include <avr/pgmspace.h>
 #define WIRE Wire
-#else
-#define PROGMEM
-#define pgm_read_byte(addr) (*(const unsigned char *)(addr))
-#define WIRE Wire1
-#endif
 
 #define DS1307_ADDRESS  0x68
 #define DS1307_CONTROL  0x07
 #define DS1307_NVRAM    0x08
-#define SECONDS_PER_DAY 86400L
 
-#define SECONDS_FROM_1970_TO_2000 946684800
-
-#if (ARDUINO >= 100)
- #include <Arduino.h> // capital A so it is error prone on case-sensitive filesystems
- // Macro to deal with the difference in I2C write functions from old and new Arduino versions.
- #define _I2C_WRITE write
- #define _I2C_READ  read
-#else
- #include <WProgram.h>
- #define _I2C_WRITE send
- #define _I2C_READ  receive
-#endif
+#include <Arduino.h>
+#define _I2C_WRITE write
+#define _I2C_READ  read
 
 static uint8_t bcd2bin (uint8_t val) { return val - 6 * (val >> 4); }
 static uint8_t bin2bcd (uint8_t val) { return val + 6 * (val / 10); }
 
-uint8_t RTC_DS1307::begin(void) {
+uint8_t RTC_DS1307::begin(void)
+{
     return 1;
 }
 
