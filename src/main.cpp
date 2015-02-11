@@ -1,9 +1,17 @@
 #include <EEPROM.h>
 #include <Arduino.h>
+#include "Time.h"
 #include "core.h"
 #include "UartWifi.h"
 #include "CentralManager.h"
 #include "Relay.h"
+
+#define DEBUG                   1
+#ifdef DEBUG
+#define dbg(fmt, args...)         serial_printf_f(F(fmt), ## args)
+#else
+#define dbg(fmt, args...)
+#endif
 
 #define LED_PIN                13
 bool led_on = true;
@@ -28,8 +36,8 @@ CentralManager manager(RELE_PIN, RELE_MODE_NC);
 
 void setup(void) 
 {
-    bool res;
-    String ipstring;
+    // bool res;
+    // String ipstring;
 
     // -- serial Debug
     Serial.begin(115200);
@@ -37,13 +45,15 @@ void setup(void)
     // -- LED
     pinMode(LED_PIN, OUTPUT);
 
-
     // -- TIME
-    setTime(16, 26, 00, 10, 2, 2015);
+    // setTime(16, 26, 00, 10, 2, 2015);
+    setTime(compile_time());
 
     // -- EEPROM
+    /*
     for (int i = 0; i < 1024; i++)	
 	EEPROM.write(i, 0);
+    */
 
     /*
     // -- WIFI
@@ -78,12 +88,16 @@ void setup(void)
     /*
     manager.SetBuffer(buffer, BUFFER_SIZE);
     */
+
+
+
 }
 
 void loop(void)
 {
-    int iLen, oLen;
-    unsigned char chlID;
+    // int iLen, oLen;
+    // unsigned char chlID;
+    time_t time_now;
  
     // event manager
     // 1. check and process event
@@ -123,6 +137,14 @@ void loop(void)
     digitalWrite(LED_PIN, led_on);
 
     led_on = !led_on;
+
+    time_now = now();
+    dbg("Time now: %02d.%02d.%04d-%02d:%02d:%02d",
+	day(time_now), month(time_now), year(time_now),
+	hour(time_now), minute(time_now), second(time_now));
+
+    setTime(time_now + SECS_PER_HOUR);
+
     // delay
     delay(1000);    
 }

@@ -46,7 +46,7 @@ unsigned char CentralManager::ProcessData(unsigned char data_len)
 
     if (!CheckIntegrity(data_len))
     {
-	dbg("CheckIntegrity not passed\n");
+	dbg("CheckIntegrity not passed");
 	return 0;
     }
 
@@ -58,7 +58,7 @@ unsigned char CentralManager::ProcessData(unsigned char data_len)
 	if (buffer[2] < 0 || buffer[2] > 2)
 	{
 	    // error
-	    dbg("Request list data error (%02x)\n", buffer[2]);
+	    dbg("Request list data error (%02x)", buffer[2]);
 	    res_len = PrepareResponseKO();
 	} 
 	else
@@ -117,7 +117,7 @@ unsigned char CentralManager::ProcessData(unsigned char data_len)
 	break;
 	
     default:
-	dbg("Command not recognized (0x2d)\n", buffer[1]);
+	dbg("Command not recognized (0x2d)", buffer[1]);
 	res_len = PrepareResponseKO();
     }
     
@@ -133,13 +133,13 @@ bool CentralManager::CheckIntegrity(unsigned char data_len)
     if (data_len < 4)
     {
 	// header, tailer, data, check sum not present
-	dbg("Data are less then 4 bytes\n");
+	dbg("Data are less then 4 bytes");
 	return false;
     }
 
     if (buffer[0] != INIT_BYTE || buffer[data_len-1] != END_BYTE)
     {
-	dbg("Header (%02x) or tailer (%02x) not present\n", buffer[0], buffer[data_len-1]);
+	dbg("Header (%02x) or tailer (%02x) not present", buffer[0], buffer[data_len-1]);
 	return false;
     }
 
@@ -150,7 +150,7 @@ bool CentralManager::CheckIntegrity(unsigned char data_len)
 
     if (sum != (unsigned char) buffer[data_len-2])
     {
-	dbg("Check sum not passed: calculated %02x, read %02x\n", sum, buffer[data_len-2]);
+	dbg("Check sum not passed: calculated %02x, read %02x", sum, buffer[data_len-2]);
 	return false;
     }
 
@@ -274,24 +274,24 @@ void CentralManager::ProcessEvent(void)
     
     event = event_manager.GetRoot();
 
-    while (event->time <= now())
+    while (event && event->time <= now())
     {
 	// remove event from list
-	event_manager.PopFirstEvent();
 	switch (event->action)
 	{
 	case ON:	
-	    dbg("ProcessEvent, action ON\n");
+	    dbg("ProcessEvent, action ON");
 	    rele.Active();
 	    break;
 	case OFF:
-	    dbg("ProcessEvent, action OFF\n");
+	    dbg("ProcessEvent, action OFF");
 	    rele.Deactive();
 	    break;
 	default:
-	    dbg("ProcessEvent, invalid action %02d\n", event->action);
-	}
+	    dbg("ProcessEvent, invalid action %02d", event->action);
+	}     
 
+	event_manager.PopFirstEvent();
 	event = event_manager.GetRoot();
     }
 
@@ -307,11 +307,11 @@ void CentralManager::ReloadEvents(void)
 	return;
 
     // add days
-    lapse = abs(weekday() - day);
+    lapse = (weekday() - day + 7) % 7;
     
     for (i = 0; i < lapse; i++)
     {
-	dbg("ReloadEvent for day %sd\n", dayStr((timeDayOfWeek_t)(day+i)));
+	dbg("ReloadEvent for day %s", dayStr((timeDayOfWeek_t)(day+i)));
 	event_manager.RestoreDay((timeDayOfWeek_t)(day+i));
     }
 
