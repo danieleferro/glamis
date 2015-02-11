@@ -34,12 +34,12 @@ bool UartWifi::Begin(unsigned long baud)
 
     if(esp8266.find("OK"))
     {
-	dbg("Module is ready");
+	dbg("Module ESP8266 is ready");
 	return true;
     }
     else
     {
-	dbg("Module have no response");
+	dbg("Module ESP8266 have no response");
 	return false;
     }
 
