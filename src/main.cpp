@@ -115,13 +115,15 @@ void loop(void)
     // 1. read data from wifi
     iLen = wifi.ReceiveMessage(buffer, BUFFER_SIZE);
     chlID = wifi.GetChlID();
-    if (iLen > 0)
+    if (iLen <= 0)
     {
-	Serial.print("Get a message from id ");
-	Serial.print(chlID);
-	Serial.println(":");
-	Serial.println(buffer); 
-    }   
+	goto end;
+    }
+
+    Serial.print("Get a message from id ");
+    Serial.print(chlID);
+    Serial.println(":");
+    Serial.println(buffer); 
     
     // 2. parse data, execute command, prepare response
     oLen = manager.ProcessData(iLen);
@@ -137,6 +139,7 @@ void loop(void)
     }
     wifi.closeMux(chlID);
 
+end:
     // 4. led blink
     digitalWrite(LED_PIN, led_on);
 
