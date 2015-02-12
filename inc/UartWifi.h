@@ -43,12 +43,14 @@ public:
     bool IpConfig(byte type, const char * addr, int port, bool a = 0, byte id = 0);
     
     // send data in sigle connection mode
-    bool Send(char * str);
+    bool Send(String str);
     // send data int multiple connection mode
-    bool Send(byte id, char * str);
+    bool Send(byte id, String str);
     
     int ReceiveMessage(char *buf, unsigned char buf_length);
     
+    // String begin(void);
+
     /*=================WIFI Function Command=================*/
     // reset the module   
     void Reset(void);    
