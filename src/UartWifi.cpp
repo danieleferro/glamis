@@ -9,11 +9,18 @@
 #define dbg(fmt, args...)
 #endif
 
+static const char head[4] = {0x0D,0x0A};   
+static const char tail[7] = {0x0D,0x0A,0x0D,0x0A};        
+
+
 UartWifi::UartWifi(unsigned int rx_pin, unsigned int tx_pin) :
     esp8266(rx_pin, tx_pin)
 {
-    pinMode(rx_pin, INPUT);
-    pinMode(tx_pin, OUTPUT);
+    // pinMode(rx_pin, INPUT);
+    // pinMode(tx_pin, OUTPUT);
+
+    // reserve data string
+    data.reserve(128);
 } 
 
 UartWifi::~UartWifi(void)
@@ -67,12 +74,14 @@ bool UartWifi::Begin(unsigned long baud)
 		false	-	unsuccessfully
 
 ***************************************************************************/
-bool UartWifi::Initialize(byte mode, const char * ssid, const char * pwd, 
+bool UartWifi::Initialize(esp8266_mode_t mode, const char * ssid, const char * pwd, 
 			  byte chl, byte ecn)
 {
+    bool b;
+
     if (mode == STA)
     {	
-	bool b = confMode(mode);
+	b = confMode(mode);
 	if (!b)
 	{
 	    return false;
@@ -82,7 +91,7 @@ bool UartWifi::Initialize(byte mode, const char * ssid, const char * pwd,
     }
     else if (mode == AP)
     {
-	bool b = confMode(mode);
+	b = confMode(mode);
 	if (!b)
 	{
 	    return false;
@@ -128,11 +137,13 @@ bool UartWifi::Initialize(byte mode, const char * ssid, const char * pwd,
 bool UartWifi::IpConfig(byte type, const char * addr, int port, bool a, byte id)
 {
     bool result = false;
+    long timeStart;
+
     if (a == 0 )
     {
 	confMux(a);
 	
-	long timeStart = millis();
+	timeStart = millis();
 	while (1)
 	{
 	    long time0 = millis();
@@ -146,7 +157,7 @@ bool UartWifi::IpConfig(byte type, const char * addr, int port, bool a, byte id)
     else if (a == 1)
     {
 	confMux(a);
-	long timeStart = millis();
+	timeStart = millis();
 	while (1)
 	{
 	    long time0 = millis();
@@ -175,81 +186,81 @@ int UartWifi::ReceiveMessage(char *buf, unsigned char buf_length)
 {
     //+IPD,<len>:<data>
     //+IPD,<id>,<len>:<data>
-    String data = "";
-    
+    char c;
+    unsigned long start;
+    unsigned int sLen, i, j, res;
+    bool found;
+
     if (esp8266.available() <= 0)
 	return 0;
 
-    unsigned long start;
+    data = "";
+
     start = millis();
-    char c0 = esp8266.read();
-    if (c0 == '+')
+    c = esp8266.read();
+    if (c != '+')
     {	
-	while (millis()-start<5000) 
+	return 0;
+    }
+
+
+    while ((millis()-start) < 5000) 
+    {
+	if (esp8266.available() > 0)
 	{
-	    if (esp8266.available()>0)
-	    {
-		char c = esp8266.read();
-		data += c;
-	    }
-	    if (data.indexOf("\nOK")!=-1)
-	    {
-		break;
-	    }
+	    c = esp8266.read();
+	    data += c;
 	}
-	//Serial.println(data);
-	// int sLen = strlen(data.c_str());
-	int sLen = data.length();
-	int i,j;
-	for (i = 0; i <= sLen; i++)
+	if (data.indexOf("\nOK") != -1)
 	{
-	    if (data[i] == ':')
-	    {
-		break;
-	    }
-	    
+	    break;
 	}
-	bool found = false;
-	for (j = 4; j <= i; j++)
+    }
+    
+    dbg("Data from ESP8266:");
+#ifdef DEBUG
+    Serial.println(data);
+#endif
+
+    // int sLen = strlen(data.c_str());
+    sLen = data.length();
+    for (i = 0; i <= sLen; i++)
+    {
+	if (data[i] == ':')
 	{
-	    if (data[j] == ',')
-	    {
-		found = true;
-		break;
-	    }
-	    
+	    break;
 	}
-	int iSize;
-	//dbg(data);
-	//dbg("");
-	if(found ==true)
-	{
-	    String _id = data.substring(4, j);
-	    chlID = _id.toInt();
-	    String _size = data.substring(j+1, i);
-	    iSize = _size.toInt();
-	    //dbg(_size);
-	    String str = data.substring(i+1, i+1+iSize);
-	    // strcpy(buf, str.c_str());
-	    str.toCharArray(buf, buf_length);
-	    //dbg(str);
-	    
-	}
-	else
-	{			
-	    String _size = data.substring(4, i);
-	    iSize = _size.toInt();
-	    //dbg(iSize);
-	    //dbg("");
-	    String str = data.substring(i+1, i+1+iSize);
-	    // strcpy(buf, str.c_str());
-	    str.toCharArray(buf, buf_length);
-	    //dbg(str);
-	}
-	return iSize;
+	
     }
 	
-    return 0;
+    found = false;
+    for (j = 4; j <= i; j++)
+    {
+	if (data[j] == ',')
+	{
+	    found = true;
+	    break;
+	}
+	
+    }
+
+    if (found)
+    {
+	chlID = data.substring(4, j).toInt();
+	dbg("Channel ID is %d", chlID);
+	
+	res = data.substring(j+1, i).toInt();	    
+    }
+    else
+    {			
+	res = data.substring(4, i).toInt();
+    }
+    
+    dbg("Data length is %d", res);
+    data.substring(i+1, i+1+res).toCharArray(buf, buf_length);
+    dbg("Received data %s", buf);
+    
+    return res;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -263,11 +274,14 @@ int UartWifi::ReceiveMessage(char *buf, unsigned char buf_length)
 ***************************************************************************/
 void UartWifi::Reset(void)
 {
-    esp8266.println(F("AT+RST"));
     unsigned long start;
+
+    esp8266.println(F("AT+RST"));
     start = millis();
-    while (millis()-start<5000) {                            
-        if(esp8266.find("ready")==true)
+
+    while ((millis()-start) < 5000) 
+    {                            
+        if(esp8266.find("ready"))
         {
 	    dbg("reboot wifi is OK");
 	    break;
@@ -293,35 +307,42 @@ void UartWifi::Reset(void)
 		AP+Station
 
 ***************************************************************************/
-String UartWifi::showMode()
+esp8266_mode_t UartWifi::showMode()
 {
-    String data;
-    esp8266.println(F("AT+CWMODE?"));  
+    char a;
     unsigned long start;
+    data = "";
+    esp8266.println(F("AT+CWMODE?"));  
+
     start = millis();
-    while (millis()-start<2000) {
-	if(esp8266.available()>0)
+    while ((millis()-start) < 2000) 
+    {
+	if (esp8266.available()>0)
 	{
-	    char a =esp8266.read();
-	    data=data+a;
+	    a = esp8266.read();
+	    data = data+a;
 	}
-	if (data.indexOf("OK")!=-1)
+	if (data.indexOf("OK") != -1)
 	{
 	    break;
 	}
     }
-    if(data.indexOf("1")!=-1)
+    
+    if (data.indexOf("1") != -1)
     {
-        return "Station";
-    }else if(data.indexOf("2")!=-1)
+        return ESP8266_MODE_STA;
+    }
+    else if (data.indexOf("2") != -1)
     {
-	return "AP";
-    }else if(data.indexOf("3")!=-1)
+	return ESP8266_MODE_AP;
+    }
+    else if (data.indexOf("3") != -1)
     {
-	return "AP+Station";
-    }else
+	return ESP8266_MODE_AP_STA;
+    }
+    else
     {
-	return "undefined";
+	return ESP8266_MODE_UNDEF;
     }
 }
 
@@ -341,24 +362,29 @@ String UartWifi::showMode()
 
 ***************************************************************************/
 
-bool UartWifi::confMode(byte a)
+bool UartWifi::confMode(esp8266_mode_t mode)
 {
-    String data;
-    esp8266.print(F("AT+CWMODE="));  
-    esp8266.println(String(a));
     unsigned long start;
+    char a;
+
+    data = "";
+
+    esp8266.print(F("AT+CWMODE="));  
+    esp8266.println(mode);
+
     start = millis();
-    while (millis()-start<2000) {
-	if(esp8266.available()>0)
+    while ((millis()-start) < 2000) 
+    {
+	if (esp8266.available() > 0)
 	{
-	    char a =esp8266.read();
+	    a = esp8266.read();
 	    data=data+a;
 	}
-	if (data.indexOf("OK")!=-1 || data.indexOf("no change")!=-1)
+	if (data.indexOf("OK") != -1 || data.indexOf("no change") != -1)
 	{
 	    return true;
 	}
-	if (data.indexOf("ERROR")!=-1 || data.indexOf("busy")!=-1)
+	if (data.indexOf("ERROR") != -1 || data.indexOf("busy") != -1)
 	{
 	    return false;
 	}
@@ -378,41 +404,43 @@ bool UartWifi::confMode(byte a)
 
 ***************************************************************************/
 
-String UartWifi::showAP(void)
+bool UartWifi::showAP(char * out, unsigned int out_len)
 {
-    String data;
+    unsigned long start;
+    char a;
+    data = "";
+
     esp8266.flush();
     esp8266.print(F("AT+CWLAP\r\n"));  
     delay(1000);
-    while(1);
-    unsigned long start;
+
     start = millis();
-    while (millis()-start<8000) {
-	if(esp8266.available()>0)
+    while ((millis()-start) < 8000) 
+    {
+	if (esp8266.available() > 0)
 	{
-	    char a =esp8266.read();
-	    data=data+a;
+	    a = esp8266.read();
+	    data = data+a;
 	}
-	if (data.indexOf("OK")!=-1 || data.indexOf("ERROR")!=-1 )
+	if (data.indexOf("OK") != -1 || data.indexOf("ERROR") != -1 )
 	{
 	    break;
 	}
     }
-    if(data.indexOf("ERROR")!=-1)
+    if (data.indexOf("ERROR")!=-1)
     {
-        return "ERROR";
+        return false;
     }
-    else{
-	char head[4] = {0x0D,0x0A};   
-	char tail[7] = {0x0D,0x0A,0x0D,0x0A};        
-	data.replace("AT+CWLAP","");
-	data.replace("OK","");
-	data.replace("+CWLAP","WIFI");
-	data.replace(tail,"");
-	data.replace(head,"");
-
-        return data;
-    }
+    
+    data.replace("AT+CWLAP", "");
+    data.replace("OK", "");
+    data.replace("+CWLAP", "WIFI");
+    data.replace(tail, "");
+    data.replace(head, "");
+    
+    data.toCharArray(out, out_len);
+    
+    return true;
 }
 
 
@@ -424,32 +452,37 @@ String UartWifi::showAP(void)
 		
 
 ***************************************************************************/
-String UartWifi::showJAP(void)
+bool UartWifi::showJAP(char * out, unsigned int out_len)
 {
+    unsigned long start;
+    char a;
+
+    data = "";
+
     esp8266.flush();
     esp8266.println(F("AT+CWJAP?"));  
-    String data;
-    unsigned long start;
+
     start = millis();
-    while (millis()-start<3000) {
-	if(esp8266.available()>0)
+
+    while ((millis()-start) < 3000) 
+    {
+	if (esp8266.available() > 0)
 	{
-	    char a =esp8266.read();
-	    data=data+a;
+	    a = esp8266.read();
+	    data = data+a;
 	}
-	if (data.indexOf("OK")!=-1 || data.indexOf("ERROR")!=-1 )
+	if (data.indexOf("OK") !=-1 || data.indexOf("ERROR") != -1)
 	{
 	    break;
 	}
     }
-    char head[4] = {0x0D,0x0A};   
-    char tail[7] = {0x0D,0x0A,0x0D,0x0A};        
     data.replace("AT+CWJAP?","");
     data.replace("+CWJAP","AP");
     data.replace("OK","");
     data.replace(tail,"");
     data.replace(head,"");
       
+    data.toCharArray(out, out_len);
     return data;
 }
 
@@ -517,31 +550,35 @@ bool UartWifi::quitAP(void)
 			mySAP:<SSID>,<password>,<channel>,<encryption>
 
 ***************************************************************************/
-String UartWifi::showSAP()
+bool UartWifi::showSAP(char * out, unsigned int out_len)
 {
-    esp8266.println(F("AT+CWSAP?"));  
-    String data;
+    char a;
     unsigned long start;
+    data = "";
+
+    esp8266.println(F("AT+CWSAP?"));  
     start = millis();
-    while (millis()-start<3000) {
-	if(esp8266.available()>0)
+
+    while ((millis()-start) < 3000) 
+    {
+	if (esp8266.available() > 0)
 	{
-	    char a =esp8266.read();
-	    data=data+a;
+	    a = esp8266.read();
+	    data = data+a;
 	}
-	if (data.indexOf("OK")!=-1 || data.indexOf("ERROR")!=-1 )
+	if (data.indexOf("OK") != -1 || data.indexOf("ERROR") != -1)
 	{
 	    break;
 	}
     }
-    char head[4] = {0x0D,0x0A};   
-    char tail[7] = {0x0D,0x0A,0x0D,0x0A};        
     data.replace("AT+CWSAP?","");
     data.replace("+CWSAP","mySAP");
     data.replace("OK","");
     data.replace(tail,"");
     data.replace(head,"");
       
+    data.toCharArray(out, out_len);
+
     return data;
 }
 
@@ -632,8 +669,6 @@ String UartWifi::showStatus(void)
 	}
     }
 
-    char head[4] = {0x0D,0x0A};   
-    char tail[7] = {0x0D,0x0A,0x0D,0x0A};        
     data.replace("AT+CIPSTATUS","");
     data.replace("OK","");
     data.replace(tail,"");
@@ -668,8 +703,7 @@ String UartWifi::showMux(void)
 	    break;
 	}
     }
-    char head[4] = {0x0D,0x0A};   
-    char tail[7] = {0x0D,0x0A,0x0D,0x0A};        
+
     data.replace("AT+CIPMUX?","");
     data.replace("+CIPMUX","showMux");
     data.replace("OK","");
@@ -1007,8 +1041,7 @@ String UartWifi::showIP(void)
     }
     //dbg(data);
     //dbg("");
-    char head[4] = {0x0D,0x0A};   
-    char tail[7] = {0x0D,0x0D,0x0A};        
+
     data.replace("AT+CIFSR","");
     data.replace(tail,"");
     data.replace(head,"");

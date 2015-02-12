@@ -21,6 +21,16 @@
 #define    CLOSE   0
 
 // The type of initialized WIFI
+typedef enum
+{
+    ESP8266_MODE_UNDEF = 0,
+    ESP8266_MODE_STA,
+    ESP8266_MODE_AP,
+    ESP8266_MODE_AP_STA
+
+}  esp8266_mode_t;
+
+
 #define    STA     1
 #define    AP      2
 #define    AP_STA  3
@@ -38,7 +48,7 @@ public:
     bool Begin(unsigned long baud);
     
     // Initialize port
-    bool Initialize(byte mode, const char *ssid, const char * pwd, 
+    bool Initialize(esp8266_mode_t mode, const char *ssid, const char * pwd, 
 		    byte chl = 1, byte ecn = 2);
     bool IpConfig(byte type, const char * addr, int port, bool a = 0, byte id = 0);
     
@@ -55,22 +65,22 @@ public:
     // reset the module   
     void Reset(void);    
     // set the working mode of module
-    bool confMode(byte a);   
+    bool confMode(esp8266_mode_t mode);   
     // set the name and password of wifi
     bool confJAP(const char * ssid , const char * pwd); 
     // set the parametter of SSID, password, channel, encryption in AP mode.
     bool confSAP(const char * ssid , const char * pwd , byte chl , byte ecn);
     
     // inquire the current mode of wifi module
-    String showMode(void);
+    esp8266_mode_t showMode(void);
     // show the list of wifi hotspot  
-    String showAP(void);
+    bool showAP(char * out, unsigned int out_len);
     // show the name of current wifi access port
-    String showJAP(void);
+    bool showJAP(char * out, unsigned int out_len);
     // quit the connection of current wifi
     bool quitAP(void);
     // show the parameter of ssid, password, channel, encryption in AP mode
-    String showSAP(void);
+    bool showSAP(char * out, unsigned int out_len);
 
     /*================TCP/IP commands================*/
     // inquire the connection status
@@ -97,6 +107,7 @@ public:
     unsigned char GetChlID(void);
 
     String m_rev;
+    String data;
 
     SoftwareSerial esp8266;
 	
