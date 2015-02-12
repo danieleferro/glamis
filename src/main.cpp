@@ -40,7 +40,6 @@ CentralManager manager(RELE_PIN, RELE_MODE_NC);
 void setup(void) 
 {
     bool res;
-    String ipstring;
 
     // -- serial Debug
     Serial.begin(115200);
@@ -81,13 +80,13 @@ void setup(void)
     {
 	// make sure the module can have enough time to get an IP address
 	delay(4000); 
-	ipstring = wifi.showIP();
-	Serial.println(ipstring);
+	wifi.showIP(buffer, BUFFER_SIZE);
+	dbg("IP is %s", buffer);
 	
 	delay(5000);
-	wifi.confMux(1);
+	wifi.confMux(ESP8266_MUX_MULT);
 	delay(100);
-	if (wifi.confServer(OPEN, 8080))
+	if (wifi.confServer(ESP8266_STATUS_OPEN, 8080))
 	    dbg("Server is set up");
 	else
 	    dbg("Server is NOT up");

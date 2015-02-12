@@ -12,13 +12,23 @@
 #define    ENCR_WAP_WAP2_PSK  4
 
 // Communication mode 
-#define    TCP     1
-#define    tcp     1
-#define    UDP     0
-#define    udp     0
+typedef enum
+{
+    ESP8266_PROTO_UDP = 0,
+    ESP8266_PROTO_TCP,
+    ESP8266_PROTO_UNDEF
 
-#define    OPEN    1
-#define    CLOSE   0
+}  esp8266_proto_t;
+
+// Communication mode 
+typedef enum
+{
+    ESP8266_STATUS_CLOSE = 0,
+    ESP8266_STATUS_OPEN,
+    ESP8266_STATUS_UNDEF
+
+}  esp8266_status_t;
+
 
 // The type of initialized WIFI
 typedef enum
@@ -30,13 +40,14 @@ typedef enum
 
 }  esp8266_mode_t;
 
+// The type of initialized WIFI
+typedef enum
+{
+    ESP8266_MUX_SING = 0,
+    ESP8266_MUX_MULT,
+    ESP8266_MUX_UNDEF
 
-#define    STA     1
-#define    AP      2
-#define    AP_STA  3
-
-#define SERIAL_TX_BUFFER_SIZE 128
-#define SERIAL_RX_BUFFER_SIZE 128
+}  esp8266_mux_t;
 
 class UartWifi
 {
@@ -50,12 +61,13 @@ public:
     // Initialize port
     bool Initialize(esp8266_mode_t mode, const char *ssid, const char * pwd, 
 		    byte chl = 1, byte ecn = 2);
-    bool IpConfig(byte type, const char * addr, int port, bool a = 0, byte id = 0);
+    bool IpConfig(esp8266_proto_t protocol, const char * addr, int port, 
+		  esp8266_mux_t mux = ESP8266_MUX_SING, byte id = 0);
     
     // send data in sigle connection mode
-    bool Send(String str);
+    bool Send(const char * in);
     // send data int multiple connection mode
-    bool Send(byte id, String str);
+    bool Send(byte id, const char * in);
     
     int ReceiveMessage(char *buf, unsigned char buf_length);
     
@@ -69,7 +81,7 @@ public:
     // set the name and password of wifi
     bool confJAP(const char * ssid , const char * pwd); 
     // set the parametter of SSID, password, channel, encryption in AP mode.
-    bool confSAP(const char * ssid , const char * pwd , byte chl , byte ecn);
+    bool confSAP(const char * ssid , const char * pwd , byte chl, byte ecn);
     
     // inquire the current mode of wifi module
     esp8266_mode_t showMode(void);
@@ -84,23 +96,23 @@ public:
 
     /*================TCP/IP commands================*/
     // inquire the connection status
-    String showStatus(void);
+    bool showStatus(char * out, unsigned int out_len);
     // show the current connection mode(sigle or multiple)
-    String showMux(void);
+    esp8266_mux_t showMux(void);
     // set the connection mode(sigle:0 or multiple:1)
-    bool confMux(bool a);
+    bool confMux(esp8266_mux_t a);
     // create new tcp or udp connection (sigle connection mode)
-    bool newMux(byte type, String addr, int port);
+    bool newMux(esp8266_proto_t protocol, const char * addr, int port);
     // create new tcp or udp connection (multiple connection mode)(id:0-4) 
-    bool newMux(byte id, byte type, String addr, int port);
+    bool newMux(byte id, esp8266_proto_t protocol, const char * addr, int port);
     // close tcp or udp (sigle connection mode)
-    void closeMux(void);
+    bool closeMux(void);
     // close tcp or udp (multiple connection mode)
-    void closeMux(byte id);
+    bool closeMux(byte id);
     // show the current ip address
-    String showIP(void);
+    bool showIP(char * out, unsigned int out_len);
     // set the parameter of server
-    bool confServer(byte mode, int port);
+    bool confServer(esp8266_status_t status, int port);
 	
     // client id(0-4)
     unsigned char chlID;		
@@ -108,6 +120,7 @@ public:
 
     String m_rev;
     String data;
+    unsigned long start;
 
     SoftwareSerial esp8266;
 	
