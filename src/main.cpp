@@ -7,6 +7,7 @@
 #include "UartWifi.h"
 #include "CentralManager.h"
 #include "Relay.h"
+#include "MemoryFree.h"
 
 #define DEBUG                   1
 #ifdef DEBUG
@@ -25,7 +26,6 @@ bool led_on = true;
 #define ESP_TX_PIN             3
 #define ESP_RX_PIN             2
 #define ESP_BAUD               115200
-
 
 #define WIFI_SSID              "AUCT"
 #define WIFI_PASSWORD          "inserimentoforzato"
@@ -69,7 +69,8 @@ void setup(void)
 
     // -- WIFI
     wifi.Begin(ESP_BAUD);
-    res = wifi.Initialize(STA, WIFI_SSID, WIFI_PASSWORD,
+    res = wifi.Initialize(STA, 
+			  WIFI_SSID, WIFI_PASSWORD,
 			  WIFI_CHANNEL, ENCR_WAP_PSK);
 
     if (!res)
@@ -145,6 +146,8 @@ end:
 	hour(time_now), minute(time_now), second(time_now));
 
     setTime(time_now + SECS_PER_HOUR);
+
+    dbg("Free memory = %03d KB", freeMemory());
 
     // delay
     delay(1000);    
