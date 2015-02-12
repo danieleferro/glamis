@@ -25,11 +25,11 @@ bool led_on = true;
 #define RELE_PIN               6
 #define ESP_TX_PIN             3
 #define ESP_RX_PIN             2
-#define ESP_BAUD               115200
+#define ESP_BAUD               9600
 
 #define WIFI_SSID              "AUCT"
 #define WIFI_PASSWORD          "inserimentoforzato"
-#define WIFI_CHANNEL           1
+#define WIFI_CHANNEL           8
 UartWifi wifi(ESP_RX_PIN, ESP_TX_PIN);
 
 
@@ -48,7 +48,7 @@ void setup(void)
     pinMode(LED_PIN, OUTPUT);
 
     // -- TIME
-
+    /*
     Wire.begin();
     rtc.begin();
     
@@ -57,7 +57,7 @@ void setup(void)
 	// following line sets the RTC to the date & time this sketch was compiled
 	rtc.adjust(compile_time());
     }
-
+    */
     setTime(compile_time());
 
     // -- EEPROM
@@ -67,10 +67,10 @@ void setup(void)
     */
 
     // -- WIFI
-    wifi.Begin(ESP_BAUD);
-    res = wifi.Initialize(ESP8266_MODE_STA, 
+    res = wifi.Begin(ESP_BAUD);
+    res = wifi.Initialize(ESP8266_MODE_AP, 
 			  WIFI_SSID, WIFI_PASSWORD,
-			  WIFI_CHANNEL, ENCR_WAP_PSK);
+			  WIFI_CHANNEL, ENCR_WAP_WAP2_PSK);
 
     if (!res)
     {
@@ -79,7 +79,7 @@ void setup(void)
     else
     {
 	// make sure the module can have enough time to get an IP address
-	delay(4000); 
+	delay(10000); 
 	wifi.showIP(buffer, BUFFER_SIZE);
 	dbg("IP is %s", buffer);
 	
@@ -91,10 +91,12 @@ void setup(void)
 	else
 	    dbg("Server is NOT up");
     }
+
     // -- MANAGER
+    /*
     manager.Init();
     manager.SetBuffer(buffer, BUFFER_SIZE);
-
+    */
 }
 
 void loop(void)
@@ -102,7 +104,8 @@ void loop(void)
     int iLen, oLen;
     unsigned char chlID;
     time_t time_now;
- 
+
+    /*
     // event manager
     // 1. check and process event
     manager.ProcessEvent();
@@ -148,6 +151,7 @@ end:
 
     dbg("Free memory = %03d B", freeMemory());
 
+    */
     // delay
     delay(1000);    
 }

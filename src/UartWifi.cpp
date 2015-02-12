@@ -30,25 +30,32 @@ UartWifi::~UartWifi(void)
 
 bool UartWifi::Begin(unsigned long baud)
 {
+    bool res;
     // the default baud rate of ESP8266 is 115200
-    esp8266.begin(115200);	
+    esp8266.begin(baud);	
     
     esp8266.flush();
     esp8266.setTimeout(3000);
 
-    esp8266.println(F("AT+RST"));
+    esp8266.print(F("AT+RST\r\n"));
     dbg("AT+RST");
 
-    if(esp8266.find("OK"))
+    if (esp8266.find("OK"))
     {
 	dbg("Module ESP8266 is ready");
-	return true;
+	res = true;
     }
     else
     {
 	dbg("Module ESP8266 have no response");
-	return false;
+	res = false;
     }
+
+    delay(2000);
+    esp8266.flush();
+    
+    dbg("-----------");
+    return res;
 
 }
 
@@ -85,7 +92,7 @@ bool UartWifi::Initialize(esp8266_mode_t mode, const char * ssid, const char * p
 	return false;
     }
 
-    Reset();
+    // Reset();
 
     switch (mode)
     {
@@ -96,7 +103,6 @@ bool UartWifi::Initialize(esp8266_mode_t mode, const char * ssid, const char * p
 	
     case ESP8266_MODE_AP:
 	
-	Reset();
 	confSAP(ssid, pwd, chl, ecn);
 	break;
 	
@@ -194,7 +200,10 @@ int UartWifi::ReceiveMessage(char *buf, unsigned char buf_length)
     
     dbg("Data from ESP8266:");
 #ifdef DEBUG
-    Serial.println(data);
+    while (esp8266.available() > 0)
+    {
+	dbg("%c", esp8266.read());
+    }
 #endif
 
     // int sLen = strlen(data.c_str());
@@ -334,29 +343,52 @@ esp8266_mode_t UartWifi::showMode()
 
 bool UartWifi::confMode(esp8266_mode_t mode)
 {
+    char c;
     data = "";
 
     esp8266.print(F("AT+CWMODE="));  
     esp8266.println(mode);
+
+    dbg("Mode %d\n", mode);
 
     start = millis();
     while ((millis()-start) < 2000) 
     {
 	if (esp8266.available() > 0)
 	{
-	    data = data + esp8266.read();
+	    c = esp8266.read();
+	    data = data + c;
+#ifdef DEBUG
+	    Serial.print(c);
+#endif
 	}
 	if (data.indexOf("OK") != -1 || data.indexOf("no change") != -1)
 	{
+#ifdef DEBUG
+	    Serial.println("");
+#endif
+	    delay(2000);
+	    esp8266.flush();
+	    
+	    dbg("-----------");
+
 	    return true;
 	}
 	if (data.indexOf("ERROR") != -1 || data.indexOf("busy") != -1)
 	{
+#ifdef DEBUG
+	    Serial.println("");
+#endif
+	    delay(2000);
+	    esp8266.flush();
+	    
+	    dbg("-----------");
 	    return false;
 	}
 	  
     }
 
+    dbg("No response for confMode");
     return false;
 }
 
@@ -470,6 +502,11 @@ bool UartWifi::confJAP(const char * ssid , const char * pwd)
     {                            
         if (esp8266.find("OK"))
         {
+	    delay(2000);
+	    esp8266.flush();
+	    
+	    dbg("confJAP OK");
+	    dbg("-----------");
 	    return true;           
         }
     }
@@ -986,6 +1023,7 @@ bool UartWifi::showIP(char * out, unsigned int out_len)
 {
     unsigned int a;
     data = "";
+    char c;
 
     //dbg("AT+CIFSR");
     for (a=0; a < 3; a++)
@@ -998,7 +1036,12 @@ bool UartWifi::showIP(char * out, unsigned int out_len)
 	{
 	    while(esp8266.available() > 0)
 	    {
-		data = data + esp8266.read();
+		c = esp8266.read();
+		data = data + c;
+#ifdef DEBUG
+		Serial.print(c);
+#endif
+
 	    }
 	    if (data.indexOf("AT+CIFSR") != -1)
 	    {
@@ -1012,6 +1055,10 @@ bool UartWifi::showIP(char * out, unsigned int out_len)
 	data = "";
     }
 
+    Serial.println("DATA:");
+
+    Serial.print(data);
+    Serial.println("-------");
     data.replace("AT+CIFSR","");
     data.replace(tail,"");
     data.replace(head,"");
