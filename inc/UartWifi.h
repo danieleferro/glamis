@@ -38,8 +38,9 @@ public:
     bool Begin(unsigned long baud);
     
     // Initialize port
-    bool Initialize(byte mode, String ssid, String pwd, byte chl = 1, byte ecn = 2);
-    bool IpConfig(byte type, String addr, int port, bool a = 0, byte id = 0);
+    bool Initialize(byte mode, const char *ssid, const char * pwd, 
+		    byte chl = 1, byte ecn = 2);
+    bool IpConfig(byte type, const char * addr, int port, bool a = 0, byte id = 0);
     
     // send data in sigle connection mode
     bool Send(String str);
@@ -56,9 +57,9 @@ public:
     // set the working mode of module
     bool confMode(byte a);   
     // set the name and password of wifi
-    bool confJAP(String ssid , String pwd); 
+    bool confJAP(const char * ssid , const char * pwd); 
     // set the parametter of SSID, password, channel, encryption in AP mode.
-    bool confSAP(String ssid , String pwd , byte chl , byte ecn);
+    bool confSAP(const char * ssid , const char * pwd , byte chl , byte ecn);
     
     // inquire the current mode of wifi module
     String showMode(void);

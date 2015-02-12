@@ -67,7 +67,8 @@ bool UartWifi::Begin(unsigned long baud)
 		false	-	unsuccessfully
 
 ***************************************************************************/
-bool UartWifi::Initialize(byte mode, String ssid, String pwd, byte chl, byte ecn)
+bool UartWifi::Initialize(byte mode, const char * ssid, const char * pwd, 
+			  byte chl, byte ecn)
 {
     if (mode == STA)
     {	
@@ -124,7 +125,7 @@ bool UartWifi::Initialize(byte mode, String ssid, String pwd, byte chl, byte ecn
 		false	-	unsuccessfully
 
 ***************************************************************************/
-bool UartWifi::IpConfig(byte type, String addr, int port, bool a, byte id)
+bool UartWifi::IpConfig(byte type, const char * addr, int port, bool a, byte id)
 {
     bool result = false;
     if (a == 0 )
@@ -462,17 +463,12 @@ String UartWifi::showJAP(void)
 		
 
 ***************************************************************************/
-bool UartWifi::confJAP(String ssid , String pwd)
+bool UartWifi::confJAP(const char * ssid , const char * pwd)
 {
 	
-    esp8266.print(F("AT+CWJAP="));
-    esp8266.print(F("\""));     //"ssid"
+    esp8266.print(F("AT+CWJAP=\""));
     esp8266.print(ssid);
-    esp8266.print(F("\""));
-
-    esp8266.print(F(","));
-
-    esp8266.print(F("\""));      //"pwd"
+    esp8266.print(F("\",\""));
     esp8266.print(pwd);
     esp8266.println(F("\""));
 
@@ -558,24 +554,32 @@ String UartWifi::showSAP()
 
 ***************************************************************************/
 
-bool UartWifi::confSAP(String ssid , String pwd , byte chl , byte ecn)
+bool UartWifi::confSAP(const char * ssid , const char * pwd , byte chl , byte ecn)
 {
-    esp8266.print(F("AT+CWSAP="));  
-    esp8266.print(F("\""));     //"ssid"
+    esp8266.print(F("AT+CWSAP=\""));  
     esp8266.print(ssid);
-    esp8266.print(F("\""));
-
-    esp8266.print(F(","));
-
-    esp8266.print(F("\""));      //"pwd"
+    esp8266.print(F("\",\""));
     esp8266.print(pwd);
-    esp8266.print(F("\""));
+    esp8266.print(F("\","));
 
+    if (chl < 10)
+    {
+	esp8266.print(chl+0x30);	    
+    }
+    else if (chl < 100)
+    {
+	esp8266.print((chl/10)+0x30); 
+	esp8266.print((chl%10)+0x30);	
+    }
+    else
+    {
+	esp8266.print((chl/100)+0x30); 
+	esp8266.print(((chl-100)/10)+0x30); 
+	esp8266.print((chl%10)+0x30);	
+    }
     esp8266.print(F(","));
-    esp8266.print(String(chl));
+    esp8266.println(ecn+0x30);
 
-    esp8266.print(F(","));
-    esp8266.println(String(ecn));
     unsigned long start;
     start = millis();
     while (millis()-start<3000) {                            
