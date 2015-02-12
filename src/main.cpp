@@ -68,7 +68,7 @@ void setup(void)
 
     // -- WIFI
     res = wifi.Begin(ESP_BAUD);
-    res = wifi.Initialize(ESP8266_MODE_AP, 
+    res = wifi.Initialize(ESP8266_MODE_STA, 
 			  WIFI_SSID, WIFI_PASSWORD,
 			  WIFI_CHANNEL, ENCR_WAP_WAP2_PSK);
 
