@@ -147,7 +147,7 @@ end:
 
     setTime(time_now + SECS_PER_HOUR);
 
-    dbg("Free memory = %03d KB", freeMemory());
+    dbg("Free memory = %03d B", freeMemory());
 
     // delay
     delay(1000);    
