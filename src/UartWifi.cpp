@@ -409,10 +409,9 @@ bool UartWifi::showAP(char * out, unsigned int out_len)
 
     esp8266.flush();
     esp8266.println(F("AT+CWLAP"));  
-    delay(1000);
 
     start = millis();
-    while ((millis()-start) < 8000) 
+    while ((millis()-start) < 20000) 
     {
 	if (esp8266.available() > 0)
 	{
