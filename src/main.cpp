@@ -79,6 +79,7 @@ void setup(void)
     delay(10000);
     res = wifi.showAP(buffer, BUFFER_SIZE);
     
+    dbg("Free memory = %03d B", freeMemory());
     while(!wifi.confJAP(WIFI_SSID, WIFI_PASSWORD))
     {
 	delay(2000);

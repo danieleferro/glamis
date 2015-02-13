@@ -408,7 +408,8 @@ bool UartWifi::showAP(char * out, unsigned int out_len)
     data = "";
 
     esp8266.flush();
-    esp8266.println(F("AT+CWLAP=\"AUCT\",\"bc:f6:85:59:36:d8\",8"));  
+    //esp8266.println(F("AT+CWLAP=\"AUCT\",\"bc:f6:85:59:36:d8\",8"));  
+    esp8266.println(F("AT+CWLAP"));  
 
     start = millis();
     while ((millis()-start) < 10000) 
