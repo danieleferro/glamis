@@ -404,6 +404,7 @@ bool UartWifi::confMode(esp8266_mode_t mode)
 
 bool UartWifi::showAP(char * out, unsigned int out_len)
 {
+    char c;
     data = "";
 
     esp8266.flush();
@@ -415,7 +416,11 @@ bool UartWifi::showAP(char * out, unsigned int out_len)
     {
 	if (esp8266.available() > 0)
 	{
-	    data = data + esp8266.read();
+	    c = esp8266.read();
+	    data = data + c;
+#ifdef DEBUG
+	    Serial.print(c);
+#endif
 	}
 	if (data.indexOf("OK") != -1 || data.indexOf("ERROR") != -1 )
 	{
