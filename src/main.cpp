@@ -74,7 +74,6 @@ void setup(void)
 			  WIFI_CHANNEL, ENCR_WAP_WAP2_PSK);
     */
     res = wifi.confMode(ESP8266_MODE_STA);
-    wifi.Reset();
     delay(10000);
     res = wifi.showAP(buffer, BUFFER_SIZE);
 
