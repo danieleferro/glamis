@@ -569,7 +569,7 @@ bool UartWifi::showFWver(char * out, unsigned int out_len)
     data = "";
 
     esp8266.flush();
-    esp8266.print(F("AT+GMR"));
+    esp8266.println(F("AT+GMR"));
 
     start = millis();
     while ((millis()-start) < 20000) 
