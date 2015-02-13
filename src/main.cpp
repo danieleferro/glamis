@@ -76,15 +76,16 @@ void setup(void)
 			  WIFI_CHANNEL, ENCR_WAP_WAP2_PSK);
     */
     res = wifi.confMode(ESP8266_MODE_STA);
-    delay(10000);
+    delay(5000);
     res = wifi.showAP(buffer, BUFFER_SIZE);
     
-    dbg("Free memory = %03d B", freeMemory());
+    dbg("\n -- Free memory = %03d B", freeMemory());
+    /*
     while(!wifi.confJAP(WIFI_SSID, WIFI_PASSWORD))
     {
 	delay(2000);
     }
-
+    */
 	/*
 
     if (!res)
