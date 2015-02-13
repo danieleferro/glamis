@@ -419,7 +419,7 @@ bool UartWifi::showAP(char * out, unsigned int out_len)
 	    c = esp8266.read();
 	    // data = data + c;
 #ifdef DEBUG
-	    Serial.print(c);
+	    Serial.write(c);
 #endif
 	}
 	if (data.indexOf("+CWLAP:") != -1)
