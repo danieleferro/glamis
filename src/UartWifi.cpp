@@ -432,6 +432,7 @@ bool UartWifi::showAP(char * out, unsigned int out_len)
         return false;
     }
     
+    /*
     dbg("\n -- DATA is:");
 #ifdef DEBUG
     Serial.println(data);
@@ -450,6 +451,7 @@ bool UartWifi::showAP(char * out, unsigned int out_len)
 #ifdef DEBUG
     Serial.println(out);
 #endif
+    */
     delay(2000);
     esp8266.flush();
     
