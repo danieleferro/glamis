@@ -75,7 +75,7 @@ void setup(void)
 			  WIFI_SSID, WIFI_PASSWORD,
 			  WIFI_CHANNEL, ENCR_WAP_WAP2_PSK);
     */
-    res = wifi.confMode(ESP8266_MODE_AP_STA);
+    res = wifi.confMode(ESP8266_MODE_STA);
     delay(10000);
     res = wifi.showAP(buffer, BUFFER_SIZE);
     
