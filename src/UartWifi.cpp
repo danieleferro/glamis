@@ -408,7 +408,7 @@ bool UartWifi::showAP(char * out, unsigned int out_len)
     data = "";
 
     esp8266.flush();
-    esp8266.print(F("AT+CWLAP\r\n"));  
+    esp8266.println(F("AT+CWLAP"));  
     delay(1000);
 
     start = millis();
