@@ -77,7 +77,7 @@ void setup(void)
     */
     res = wifi.confMode(ESP8266_MODE_AP_STA);
     delay(10000);
-    //res = wifi.showAP(buffer, BUFFER_SIZE);
+    res = wifi.showAP(buffer, BUFFER_SIZE);
     
     dbg("\n -- Free memory = %03d B", freeMemory());
 
