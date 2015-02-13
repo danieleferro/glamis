@@ -422,6 +422,12 @@ bool UartWifi::showAP(char * out, unsigned int out_len)
 	    Serial.print(c);
 #endif
 	}
+	if (data.indexOf("+CWLAP:") != -1)
+	{
+	    dbg("\n >> \n");
+	    data = "";
+	}
+	
 	if (data.indexOf("OK") != -1 || data.indexOf("ERROR") != -1 )
 	{
 	    dbg("\n received OK or ERROR");
@@ -434,7 +440,7 @@ bool UartWifi::showAP(char * out, unsigned int out_len)
         return false;
     }
     
-    dbg("DATA is:");
+    dbg("\n -- DATA is:");
 #ifdef DEBUG
     Serial.println(data);
 #endif
