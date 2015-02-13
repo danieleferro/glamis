@@ -113,7 +113,10 @@ public:
     bool showIP(char * out, unsigned int out_len);
     // set the parameter of server
     bool confServer(esp8266_status_t status, int port);
-	
+
+    // get FW version
+    bool showFWver(char * out, unsigned int out_len);
+    
     // client id(0-4)
     unsigned char chlID;		
     unsigned char GetChlID(void);

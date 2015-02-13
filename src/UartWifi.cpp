@@ -562,6 +562,31 @@ bool UartWifi::confJAP(const char * ssid , const char * pwd)
     }
     return false;
 }
+
+bool UartWifi::showFWver(char * out, unsigned int out_len)
+{
+    char c;
+    data = "";
+
+    esp8266.flush();
+    esp8266.print(F("AT+GMR"));
+
+    start = millis();
+    while ((millis()-start) < 20000) 
+    {                            
+	if (esp8266.available() > 0)
+	{
+  	    c = esp8266.read();
+	    data = data + c;
+#ifdef DEBUG
+	    Serial.write(c);
+#endif
+	}
+    }
+    return true;
+}
+
+
 /*************************************************************************
 //quite the access port
 		
