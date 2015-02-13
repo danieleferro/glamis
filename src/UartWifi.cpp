@@ -415,7 +415,7 @@ bool UartWifi::showAP(char * out, unsigned int out_len)
     {
 	if (esp8266.available() > 0)
 	{
-	    c = esp8266.read();
+  	    c = esp8266.read();
 	    data = data + c;
 #ifdef DEBUG
 	    Serial.write(c);
@@ -468,6 +468,7 @@ bool UartWifi::showAP(char * out, unsigned int out_len)
 ***************************************************************************/
 bool UartWifi::showJAP(char * out, unsigned int out_len)
 {
+    char c;
     data = "";
 
     esp8266.flush();
@@ -479,13 +480,22 @@ bool UartWifi::showJAP(char * out, unsigned int out_len)
     {
 	if (esp8266.available() > 0)
 	{
-	    data = data + esp8266.read();
+  	    c = esp8266.read();
+	    data = data + c;
+#ifdef DEBUG
+	    Serial.write(c);
+#endif
 	}
 	if (data.indexOf("OK") !=-1 || data.indexOf("ERROR") != -1)
 	{
 	    break;
 	}
     }
+
+    dbg("\n -- DATA is:");
+#ifdef DEBUG
+    Serial.println(data);
+#endif
 
     data.replace("AT+CWJAP?","");
     data.replace("+CWJAP","AP");
@@ -494,6 +504,15 @@ bool UartWifi::showJAP(char * out, unsigned int out_len)
     data.replace(head,"");
       
     data.toCharArray(out, out_len);
+
+    dbg("\n -- OUT is:");
+#ifdef DEBUG
+    Serial.println(out);
+#endif
+    delay(2000);
+    esp8266.flush();
+    
+    dbg("-----------");
 
     return (data.length() != 0);
 }
@@ -510,6 +529,10 @@ bool UartWifi::showJAP(char * out, unsigned int out_len)
 ***************************************************************************/
 bool UartWifi::confJAP(const char * ssid , const char * pwd)
 {
+    char c;
+    data = "";
+
+    esp8266.flush();
     esp8266.print(F("AT+CWJAP=\""));
     esp8266.print(ssid);
     esp8266.print(F("\",\""));
@@ -517,9 +540,17 @@ bool UartWifi::confJAP(const char * ssid , const char * pwd)
     esp8266.println(F("\""));
 
     start = millis();
-    while ((millis()-start) < 3000) 
+    while ((millis()-start) < 20000) 
     {                            
-        if (esp8266.find("OK"))
+	if (esp8266.available() > 0)
+	{
+  	    c = esp8266.read();
+	    data = data + c;
+#ifdef DEBUG
+	    Serial.write(c);
+#endif
+	}
+        if (data.indexOf("OK") !=-1)
         {
 	    delay(2000);
 	    esp8266.flush();
