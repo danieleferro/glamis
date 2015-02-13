@@ -76,7 +76,11 @@ void setup(void)
     res = wifi.confMode(ESP8266_MODE_STA);
     delay(10000);
     res = wifi.showAP(buffer, BUFFER_SIZE);
-    res = wifi.confJAP(WIFI_SSID, WIFI_PASSWORD);
+    
+    while(!wifi.confJAP(WIFI_SSID, WIFI_PASSWORD))
+    {
+	delay(2000);
+    }
 
 	/*
 
