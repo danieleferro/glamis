@@ -421,8 +421,8 @@ bool UartWifi::showAP(char * out, unsigned int out_len)
 #ifdef DEBUG
 	    Serial.print(c);
 #endif
-	    if (c == '\r');
-		data = data + '\n';
+	    if (c == '\n');
+		data = data + '\r';
 
 	}
 	if (data.indexOf("OK") != -1 || data.indexOf("ERROR") != -1 )
