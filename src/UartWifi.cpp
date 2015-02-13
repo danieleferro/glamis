@@ -411,13 +411,12 @@ bool UartWifi::showAP(char * out, unsigned int out_len)
     esp8266.println(F("AT+CWLAP=\"AUCT\",\"bc:f6:85:59:36:d8\",8"));  
 
     start = millis();
-    while (1) // (millis()-start) < 20000) 
+    while ((millis()-start) < 10000) 
     {
-	delay(10);
 	if (esp8266.available() > 0)
 	{
 	    c = esp8266.read();
-	    // data = data + c;
+	    data = data + c;
 #ifdef DEBUG
 	    Serial.write(c);
 #endif
@@ -453,6 +452,12 @@ bool UartWifi::showAP(char * out, unsigned int out_len)
     
     data.toCharArray(out, out_len);
     
+    dbg("\n -- OUT is:");
+#ifdef DEBUG
+    Serial.println(out);
+#endif
+
+
     return (data.length() != 0);
 }
 
