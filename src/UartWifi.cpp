@@ -419,8 +419,13 @@ bool UartWifi::showAP(char * out, unsigned int out_len)
   	    c = esp8266.read();
 	    data = data + c;
 #ifdef DEBUG
-	    Serial.write(c);
+	    Serial.print(c);
 #endif
+	    if (c == '\n')
+		data = data + '\r';
+	    else if (c == '\r');
+		data = data + '\n';
+
 	}
 	if (data.indexOf("OK") != -1 || data.indexOf("ERROR") != -1 )
 	{
