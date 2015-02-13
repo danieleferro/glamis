@@ -411,12 +411,13 @@ bool UartWifi::showAP(char * out, unsigned int out_len)
     esp8266.println(F("AT+CWLAP"));  
 
     start = millis();
-    while ((millis()-start) < 20000) 
+    while (1) // (millis()-start) < 20000) 
     {
+	delay(10);
 	if (esp8266.available() > 0)
 	{
 	    c = esp8266.read();
-	    data = data + c;
+	    // data = data + c;
 #ifdef DEBUG
 	    Serial.print(c);
 #endif
