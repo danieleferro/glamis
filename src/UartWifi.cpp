@@ -424,14 +424,21 @@ bool UartWifi::showAP(char * out, unsigned int out_len)
 	}
 	if (data.indexOf("OK") != -1 || data.indexOf("ERROR") != -1 )
 	{
+	    dbg("\n received OK or ERROR");
 	    break;
 	}
     }
     if (data.indexOf("ERROR")!=-1)
     {
+	dbg("\n received ERROR");
         return false;
     }
     
+    dbg("DATA is:");
+#ifdef DEBUG
+    Serial.println(data);
+#endif
+
     data.replace("AT+CWLAP", "");
     data.replace("OK", "");
     data.replace("+CWLAP", "WIFI");
