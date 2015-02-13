@@ -74,7 +74,6 @@ void setup(void)
     res = wifi.Initialize(ESP8266_MODE_STA, 
 			  WIFI_SSID, WIFI_PASSWORD,
 			  WIFI_CHANNEL, ENCR_WAP_WAP2_PSK);
-    */
     res = wifi.confMode(ESP8266_MODE_STA);
     delay(10000);
     while(1)
@@ -88,6 +87,7 @@ void setup(void)
     {
 	delay(2000);
     }
+    */
     /*
     if (!res)
     {
