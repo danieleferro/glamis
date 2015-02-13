@@ -421,21 +421,13 @@ bool UartWifi::showAP(char * out, unsigned int out_len)
 	    Serial.write(c);
 #endif
 	}
-	if (data.indexOf("+CWLAP:") != -1)
-	{
-	    dbg("\n >> \n");
-	    data = "";
-	}
-	
 	if (data.indexOf("OK") != -1 || data.indexOf("ERROR") != -1 )
 	{
-	    dbg("\n received OK or ERROR");
 	    break;
 	}
     }
     if (data.indexOf("ERROR")!=-1)
     {
-	dbg("\n received ERROR");
         return false;
     }
     
@@ -449,6 +441,7 @@ bool UartWifi::showAP(char * out, unsigned int out_len)
     data.replace("+CWLAP", "WIFI");
     data.replace(tail, "");
     data.replace(head, "");
+    data.replace("=", "");
     
     data.toCharArray(out, out_len);
     
