@@ -145,7 +145,7 @@ void loop(void)
 
       	// Send the final one back.
       	radio.write(receive_payload, len);
-      	dbg("Sent response");
+      	dbg("Sent response\r\n");
 
       	// Now, resume listening so we catch the next packets.
       	radio.startListening();
