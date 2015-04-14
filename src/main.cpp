@@ -124,7 +124,7 @@ void loop(void)
 	    receive_payload[len] = 0;
 
 	    // Spew it
-	    dbg("Got payload size=%i value=%s\n\r", len, receive_payload);
+	    dbg("Got payload size=%i value=%s", len, receive_payload);
 	    
 	    if (!strcmp(receive_payload, "on"))
 	    {
@@ -145,7 +145,7 @@ void loop(void)
 
       	// Send the final one back.
       	radio.write(receive_payload, len);
-      	dbg("Sent response.\n\r");
+      	dbg("Sent response");
 
       	// Now, resume listening so we catch the next packets.
       	radio.startListening();
