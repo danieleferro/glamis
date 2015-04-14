@@ -198,6 +198,7 @@ int main(int argc, char ** argv)
     {	
         res = sendCommand(command);
 	c++;
+	sleep(1);
     } while (!res && c < 3);
 
     return 1;

@@ -150,4 +150,6 @@ void loop(void)
       	// Now, resume listening so we catch the next packets.
       	radio.startListening();
     }
+
+    delay(1000);
 }
