@@ -151,5 +151,5 @@ void loop(void)
       	radio.startListening();
     }
 
-    delay(1000);
+    delay(500);
 }
