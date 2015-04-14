@@ -349,6 +349,7 @@ clean:
 	rm -f $(OBJECTS)
 	rm -f $(TARGET).elf $(TARGET).hex $(ARDUINOLIB) *~
 	rm -rf .lib .dep .obj
+	rm -rf $(LOG_FILE)
 
 boards:
 	@echo "Available values for BOARD:"

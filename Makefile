@@ -1,4 +1,4 @@
-LIBRARIES := EEPROM Time SoftwareSerial RTClib Wire MemoryFree
+LIBRARIES := SPI EEPROM Time RTClib Wire MemoryFree RF24
 BOARD := nano328
 TARGET := glamis
 SERIALDEV := /dev/ttyUSB0
