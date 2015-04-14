@@ -23,18 +23,13 @@
 //
 #define LED_PIN                13
 #define RELE_PIN               6
-#define RELE_MODE_NC           0
 
 // CE = 9, CSN = 10
 RF24 radio(9,10);
-
 // Radio pipe addresses for the 2 nodes to communicate.
 const uint64_t pipes[2] = { 0xE0FDADFD1CLL, 0x5F31AD89B1LL };
 
-bool led_on = true;
-
 Relay relay(RELE_PIN, RELE_MODE_NC);
-
 
 //
 // Payload
@@ -56,12 +51,11 @@ void setup(void)
 
     Serial.begin(115200);
     printf_begin();
-    printf("\n\r** GLAMIS CLIENT **/\n\r");
+    dbg("\n\r** GLAMIS CLIENT **\n\r");
 
     //
     // Setup and configure rf radio
     //
-
     radio.begin();
 
     // enable dynamic payloads
@@ -86,13 +80,11 @@ void setup(void)
     //
     // Start listening
     //
-
     radio.startListening();
 
     //
     // Dump the configuration of the rf unit for debugging
     //
-
     radio.printDetails();
 
     //
@@ -108,17 +100,20 @@ void setup(void)
 	EEPROM.write(i, 0);
     */
 
-
 }
+
+
+
 
 
 void loop(void)
 {
+    uint8_t len = 0;
+
     // if there is data ready
     if (radio.available())
     {
     	// Dump the payloads until we've gotten everything
-      	uint8_t len = 0;
       	while (radio.available())
       	{
 	    // Fetch the payload, and see if this was the last one.
@@ -129,7 +124,20 @@ void loop(void)
 	    receive_payload[len] = 0;
 
 	    // Spew it
-	    printf("Got payload size=%i value=%s\n\r", len, receive_payload);
+	    dbg("Got payload size=%i value=%s\n\r", len, receive_payload);
+	    
+	    if (!strcmp(receive_payload, "on"))
+	    {
+		relay.Active();	
+		digitalWrite(LED_PIN, true);
+	    }
+	    else if (!strcmp(receive_payload, "off"))
+	    {
+		relay.Deactive();		
+		digitalWrite(LED_PIN, false);
+
+	    }
+
       	}
 
       	// First, stop listening so we can talk
@@ -137,7 +145,7 @@ void loop(void)
 
       	// Send the final one back.
       	radio.write(receive_payload, len);
-      	printf("Sent response.\n\r");
+      	dbg("Sent response.\n\r");
 
       	// Now, resume listening so we catch the next packets.
       	radio.startListening();
