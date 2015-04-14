@@ -21,11 +21,10 @@
 //
 // Hardware configuration
 //
-#define LED_PIN                13
 #define RELE_PIN               6
 
 // CE = 9, CSN = 10
-RF24 radio(9,10);
+RF24 radio(9, 10);
 // Radio pipe addresses for the 2 nodes to communicate.
 const uint64_t pipes[2] = { 0xE0FDADFD1CLL, 0x5F31AD89B1LL };
 
@@ -39,15 +38,10 @@ char receive_payload[MAX_PAYLOAD_RESP];
 
 void setup(void)
 {
-
-    // 
-    // LED
-    //
-    pinMode(LED_PIN, OUTPUT);
-
     //
     // Print preamble
     //
+
 
     Serial.begin(115200);
     printf_begin();
@@ -129,13 +123,10 @@ void loop(void)
 	    if (!strcmp(receive_payload, "on"))
 	    {
 		relay.Active();	
-		digitalWrite(LED_PIN, true);
 	    }
 	    else if (!strcmp(receive_payload, "off"))
 	    {
 		relay.Deactive();		
-		digitalWrite(LED_PIN, false);
-
 	    }
 
       	}
