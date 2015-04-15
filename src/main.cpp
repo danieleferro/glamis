@@ -22,13 +22,23 @@
 // Hardware configuration
 //
 #define RELE_PIN               6
+Relay relay(RELE_PIN, RELE_MODE_NC);
+
 
 // CE = 9, CSN = 10
 RF24 radio(9, 10);
 // Radio pipe addresses for the 2 nodes to communicate.
 const uint64_t pipes[2] = { 0xE0FDADFD1CLL, 0x5F31AD89B1LL };
 
-Relay relay(RELE_PIN, RELE_MODE_NC);
+#define BUTTON_PIN             2
+#define BUTTON_DEBOUNCE_DELAY  50 // ms
+// Variables will change:
+int buttonState;             // the current reading from the input pin
+int lastButtonState = LOW;   // the previous reading from the input pin
+
+// the following variables are long's because the time, measured in miliseconds,
+// will quickly become a bigger number than can be stored in an int.
+unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
 
 //
 // Payload
@@ -39,10 +49,13 @@ char receive_payload[MAX_PAYLOAD_RESP];
 void setup(void)
 {
     //
+    // PIN
+    //
+    pinMode(BUTTON_PIN, INPUT);
+
+    //
     // Print preamble
     //
-
-
     Serial.begin(115200);
     printf_begin();
     dbg("\n\r** GLAMIS CLIENT **\n\r");
@@ -103,6 +116,7 @@ void setup(void)
 void loop(void)
 {
     uint8_t len = 0;
+    int buttonReading;
 
     // if there is data ready
     if (radio.available())
@@ -141,5 +155,42 @@ void loop(void)
       	// Now, resume listening so we catch the next packets.
       	radio.startListening();
     }
+
+
+    //  read the state of the switch into a local variable:
+    buttonReading = digitalRead(BUTTON_PIN);
+
+    // check to see if you just pressed the button 
+    // (i.e. the input went from LOW to HIGH),  and you've waited 
+    // long enough since the last press to ignore any noise:  
+
+    // If the switch changed, due to noise or pressing:
+    if (buttonReading != lastButtonState)
+    {
+	// reset the debouncing timer
+	lastDebounceTime = millis();
+    } 
+  
+    if ((millis() - lastDebounceTime) > BUTTON_DEBOUNCE_DELAY) 
+    {
+	// whatever the reading is at, it's been there for longer
+	// than the debounce delay, so take it as the actual current state:
+
+	// if the button state has changed:
+	if (buttonReading != buttonState) 
+	{
+	    buttonState = buttonReading;
+
+	    // only toggle the LED if the new button state is HIGH
+	    if (buttonState == HIGH) 
+	    {
+		relay.Switch();	
+	    }
+	}
+    }
+  
+    // save the reading.  Next time through the loop,
+    // it'll be the lastButtonState:
+    lastButtonState = buttonReading;
 
 }

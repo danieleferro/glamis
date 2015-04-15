@@ -15,6 +15,7 @@ Relay::Relay(unsigned int pin, bool mode_nc)
     this->pin = pin;
     this->mode_nc = mode_nc;
     pinMode(pin, OUTPUT);
+    Deactive();
 }
 
 
@@ -35,6 +36,7 @@ void Relay::Active(void)
 	dbg("Activing PIN %d HIGH", pin);
 	digitalWrite(pin, HIGH);
     }
+    active = true;
 }
 
 void Relay::Deactive(void)
@@ -49,4 +51,13 @@ void Relay::Deactive(void)
 	dbg("Activing PIN %d LOW", pin);
 	digitalWrite(pin, LOW);
     }
+    active = false;
+}
+
+void Relay::Switch(void)
+{
+    if (active)
+	Deactive();
+    else
+	Active();
 }

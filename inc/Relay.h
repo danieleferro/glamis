@@ -13,11 +13,13 @@ public:
 
     void Active(void);
     void Deactive(void);
+    void Switch(void);
 
 private:
     
     unsigned int pin;
     bool mode_nc;
+    bool active;
 
 };
 
