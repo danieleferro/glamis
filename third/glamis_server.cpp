@@ -35,7 +35,7 @@ void setup(void)
     // Print preamble
     //
 
-    printf("\n\r** GLAMIS SEVER **\n\r");
+    fprintf(stdout, "\n\r** GLAMIS SEVER **\n\r");
 
     //
     // Setup and configure rf radio
@@ -89,13 +89,13 @@ bool sendCommand(bool active)
     // This will block until complete
     if (active)
     {
-	printf("Sending ON command\n");
+	fprintf(stdout, "Sending ON command\n");
 	msg_ptr = active_payload;
 	len = sizeof(active_payload);
     }
     else
     {
-	printf("Sending OFF command\n");
+	fprintf(stdout, "Sending OFF command\n");
 	msg_ptr = disactive_payload;
 	len = sizeof(disactive_payload);
     }
@@ -114,7 +114,7 @@ bool sendCommand(bool active)
     // Describe the results
     if (timeout)
     {
-	printf("Failed, response timed out.\n\r");
+	fprintf(stdout, "Failed, response timed out.\n\r");
 	res = false;
     }
     else
@@ -127,7 +127,7 @@ bool sendCommand(bool active)
 	receive_payload[len] = 0;
 
 	// Spew it
-	printf("Got response size=%i value=%s\n\r", len, receive_payload);
+	fprintf(stdout, "Got response size=%i value=%s\n\r", len, receive_payload);
 
 	res = (strcmp(receive_payload, msg_ptr) == 0);
 
