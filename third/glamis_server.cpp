@@ -89,13 +89,13 @@ bool sendCommand(bool active)
     // This will block until complete
     if (active)
     {
-	printf("Sending OFF command\n");
+		fprintf(stdout, "Sending OFF command\n");
 	msg_ptr = active_payload;
 	len = sizeof(active_payload);
     }
     else
     {
-	printf("Sending ON command\n");
+		fprintf(stdout, "Sending ON command\n");
 	msg_ptr = disactive_payload;
 	len = sizeof(disactive_payload);
     }
