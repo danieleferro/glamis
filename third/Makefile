@@ -9,3 +9,7 @@ ${PROGRAMS}: ${SOURCES}
 clean:
 	rm -rf $(PROGRAMS)
 
+permission:
+# in order to grant access to /dev/mem
+	sudo chown 0:0 ${PROGRAMS}
+	sudo chmod u+s ${PROGRAMS}
